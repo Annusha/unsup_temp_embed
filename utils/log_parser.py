@@ -12,7 +12,7 @@ import pandas as pd
 from collections import defaultdict
 import re
 
-from utils.arg_pars import opt
+# from utils.arg_pars import opt
 
 
 def params_parser(path):
@@ -25,16 +25,17 @@ def params_parser(path):
         params = defaultdict(list)
         set_idx += 1
 
-        search = re.search(r'dim:\s*(\d*)\s*epochs:\s*(\d*)\s*,\s*lr:\s*(\d*.\d*e-\d*)\s*', line)
+        search = re.search(r'dim:\s*(\d*)\s*epochs:\s*(\d*)\s*,*\s*lr:\s*(\d*.\d*e-\d*),*\s*norm:\s*(\w*)', line)
         params['dim'] = int(search.group(1))
         params['epochs'] = int(search.group(2))
         params['lr'] = float(search.group(3))
+        params['norm'] = str(search.group(4))
         params['idx'] = set_idx
 
     with open(path, 'r') as f:
         frames = []
         for line in f:
-            if 'wrap - <function pose_training' in line:
+            if 'wrap - <function temp_embed' in line:
                 yield params
 
             if 'SET' in line:
@@ -44,8 +45,13 @@ def params_parser(path):
             if 'clustering - MoF val' in line:
                 params['cl_mof'].append(float(line.split()[-1]))
 
+
             if 'accuracy_corpus - MoF val' in line:
                 params['mof'].append(float(line.split()[-1]))
+                params['frames'].append(frames[-1])
+
+            if 'accuracy_corpus - finalMoF val:' in line:
+                params['final_mof'].append(float(line.split()[-1]))
                 params['frames'].append(frames[-1])
 
             if 'accuracy_corpus - pure vit MoF val' in line:
@@ -106,10 +112,11 @@ def params_parser_tcn(path):
 
 
 def table_joiner(prefix, path):
-    if opt.dataset == 'bf':
-        table_path = '/media/data/kukleva/lab/Breakfast/tables'
-    if opt.dataset == 'yti':
-        table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    # if opt.dataset == 'bf':
+    #     table_path = '/media/data/kukleva/lab/Breakfast/tables'
+    # if opt.dataset == 'yti':
+    #     table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    table_path = '/media/data/kukleva/lab/50salads/tables'
     all_subactions = {}
 
     filelist = os.listdir(path)
@@ -152,10 +159,9 @@ def table_joiner(prefix, path):
 
 
 def all_subactions_parser(prefix, path):
-    if opt.dataset == 'bf':
-        table_path = '/media/data/kukleva/lab/Breakfast/tables'
-    if opt.dataset == 'yti':
-        table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    # table_path = '/media/data/kukleva/lab/Breakfast/tables'
+    # table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    table_path = '/media/data/kukleva/lab/50salads/tables'
     subactions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
 
     all_subactions = {}
@@ -203,18 +209,21 @@ def all_subactions_parser(prefix, path):
 
 
 def create_table_params(path, prefix=''):
-    if opt.dataset == 'bf':
-        table_path = '/media/data/kukleva/lab/Breakfast/tables'
-    if opt.dataset == 'yti':
-        table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    # if opt.dataset == 'bf':
+    #     table_path = '/media/data/kukleva/lab/Breakfast/tables'
+    # if opt.dataset == 'yti':
+    #     table_path = '/media/data/kukleva/lab/YTInstructions/tables'
+    # if opt.dataset == 'fs':
+    table_path = '/media/data/kukleva/lab/50salads/tables'
     data = defaultdict(list)
 
-    for params in params_parser_tcn(path):
+    # for params in params_parser_tcn(path):
+    for params in params_parser(path):
         if not params:
             continue
 
-        # name = (params['dim'], params['epochs'], params['lr'])
-        name = (params['dim'], params['lr'], params['ksize'], params['levels'], params['dropout'], params['epochs'])
+        name = (params['dim'], params['epochs'], params['lr'], params['norm'])
+        # name = (params['dim'], params['lr'], params['ksize'], params['levels'], params['dropout'], params['epochs'])
         if not name[0]:
             name = 'set'
         # data[name].append(params['loss'][-1])
@@ -270,15 +279,41 @@ def yti_parser(p):
         print('__________________________________________\n')
 
 
+def seed_parser(path):
+    # just for breakfast dataset
+
+    seeds = []
+    frames = []
+    total_frames = 3590899
+
+    cur_frames = 0
+    with open(path, 'r') as f:
+        for line in f:
+            if 'SET: seed:' in line:
+                line = int(line.strip().split()[-1])
+                if line not in seeds:
+                    if seeds:
+                        frames.append(cur_frames)
+                    cur_frames = 0
+                    # seeds.append(line)
+                continue
+
+            if 'accuracy_class.py - mof_val - frames true:' in line:
+                search = re.search(r'frames true:\s*(\d*)\s*frames overall :\s*(\d*)', line)
+                action_frames = int(search.group(1))
+
+            if 'wrap - <function temp_embed' in line:
+                cur_frames += action_frames
+
+            if 'wrap - <function all_actions' in line:
+                frames.append(cur_frames)
+
+    return np.array(frames) / total_frames
+
+
 
 
 if __name__ == '__main__':
-    # path = '/media/data/kukleva/lab/logs_debug/grid_search_mlp_tea_pipeline_mlp_full_2_20_gmm(1)_adj_lr1.0e-03_ep30(2018-09-17 21:49:14.462660)'
-    # create_table(path)
-
-    # path = '/media/data/kukleva/lab/Breakfast/logs/grid.vit._coffee_mlp_!pose_full_vae1_time10.0_epochs30_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_zeros_b0_v1_l0_c1_pipeline(2018-10-24 23:06:18.032832)'
-    #
-    # path = '/media/data/kukleva/lab/Breakfast/logs/tcn.gs._coffee_!bg_cc1_data1_bf_dim40_ep10_gmm1_!gt_!l_lr0.0001_tcn_!mal_size40_+d0_vit_pipeline(2019-01-02 11:04:44.413855)'
     # create_table_params(path)
 
     # prefix = 'gmm.rt.cc.'
@@ -286,8 +321,19 @@ if __name__ == '__main__':
     # table_joiner(prefix, log_path)
 
 
-    prefix = 'kmean.rt.cc.'
-    log_path = '/media/data/kukleva/lab/Breakfast/logs'
-    all_subactions_parser(prefix, log_path)
+    # prefix = 'kmean.rt.cc.'
+    # log_path = '/media/data/kukleva/lab/Breakfast/logs'
+    # all_subactions_parser(prefix, log_path)
 
+    log_path = '/media/data/kukleva/lab/Breakfast/logs'
+    frames = []
+    for filename in os.listdir(log_path):
+        if not filename.startswith('seeds.new.'):
+            continue
+        print(filename)
+        frames += list(seed_parser(os.path.join(log_path, filename)))
+
+    print(frames)
+    print(np.mean(frames))
+    print(len(frames))
 

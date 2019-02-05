@@ -246,8 +246,6 @@ class Accuracy(object):
             self._classes_IoU[gt_label] = [true_defined_frame_n, union]
 
             if gt_label in self.exclude:
-                if opt.zeros == False and gt_label == 0:
-                    continue
                 excluded_total += np.sum(gt_mask)
             else:
                 self._frames_true_pr += true_defined_frame_n

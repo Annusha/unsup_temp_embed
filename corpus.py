@@ -78,6 +78,8 @@ class Corpus(object):
 
         # to save segmentation of the videos
         dir_check(os.path.join(opt.data, 'segmentation'))
+        dir_check(os.path.join(opt.data, 'likelihood'))
+        self.vis = None  # visualization tool
 
     def _init_videos(self):
         logger.debug('.')
@@ -92,8 +94,11 @@ class Corpus(object):
                             if opt.reduced:
                                 opt.reduced = opt.reduced - 1
                                 continue
-                        match = re.match(r'(\w*)\.\w*', filename)
-                        gt_name = match.group(1)
+                        if opt.dataset == 'fs':
+                            gt_name = filename[:-(len(opt.ext) + 1)] + '.txt'
+                        else:
+                            match = re.match(r'(\w*)\.\w*', filename)
+                            gt_name = match.group(1)
                         # use extracted features from pretrained on gt embedding
                         if opt.save_embed_feat:
                             dir_check(os.path.join(opt.data, 'embed'))
@@ -467,11 +472,13 @@ class Corpus(object):
         ########################################################################
         # VISUALISATION
         if opt.vis:
-            vis = Visual(mode='pca', full=True, save=True)
+            self.vis = Visual(mode=opt.vis_mode, save=True)
             postfix = ['', '+rt.cc.'][opt.rt_cl_concat]
-            vis.fit(self._embedded_feat, kmean.labels_, 'kmean_%s' % postfix)
-            vis.fit(self._embedded_feat, long_rt, 'time_')
-            vis.fit(self._embedded_feat, long_gt, 'gt_')
+            self.vis.fit(self._embedded_feat, long_gt, 'gt_', reset=False)
+            self.vis.color(long_rt, 'time_')
+            self.vis.color(kmean.labels_, 'kmean_%s' % postfix)
+            # vis.fit(self._embedded_feat, long_rt, 'time_')
+            # vis.fit(self._embedded_feat, kmean.labels_, 'kmean_%s' % postfix)
         ########################################################################
 
         logger.debug('Update video z for videos before GMM fitting')
@@ -656,11 +663,18 @@ class Corpus(object):
 
         if opt.vis:
             # VISUALISATION
-            mode = 'pca'
-            vis = Visual(mode=mode, full=True, save=True)
+
             # gt_plot_iter = [[0, 1], [0]][self.iter != 0]
             long_pr = [self._label2gt[i] for i in long_pr]
-            vis.fit(self._embedded_feat, long_pr, 'iter_%d_' % self.iter)
+
+            if self.vis is None:
+                self.vis = Visual(mode=opt.vis_mode, save=True, reduce=None)
+                self.vis.fit(self._embedded_feat, long_pr, 'iter_%d' % self.iter)
+            else:
+                reset = prefix == 'final'
+                self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
+
+            # vis.fit(self._embedded_feat, long_pr, 'iter_%d_' % self.iter)
             # for gt_plot in gt_plot_iter:
             #     vis.data = self._embedded_feat
             #     vis.labels = [long_pr, long_gt][gt_plot]

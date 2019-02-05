@@ -213,7 +213,8 @@ def update_opt_str():
                      'bg': 'bg',
                      'viterbi': 'vit',
                      'label': 'l',
-                     'concat': 'cc'}
+                     'concat': 'cc',
+                     'f_norm': 'nm'}
 
     log_str = ''
     logs_args = ['prefix', 'subaction'] + sorted(logs_args_map)

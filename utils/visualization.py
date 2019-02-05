@@ -21,7 +21,7 @@ from utils.util_functions import dir_check, timing
 
 
 class Visual(object):
-    def __init__(self, mode='pca', dim=2, full=True, save=False):
+    def __init__(self, mode='pca', dim=2, reduce=None, save=False):
 
         self._mode = mode
         self._model = None
@@ -32,7 +32,7 @@ class Visual(object):
         self._counter = 0
         self._result = None
         self.size = 1  # size of dots
-        self._full = full
+        self.reduce = reduce
         self._save = save
 
     @property
@@ -53,23 +53,33 @@ class Visual(object):
         self._sizes += [self.size] * len(new_labels)
 
     @timing
-    def fit_data(self, reduce=None):
+    def fit_data(self):
         if self._mode == 'pca':
             self._model = PCA(n_components=self._dim, random_state=opt.seed)
         if self._mode == 'tsne':
             self._model = TSNE(n_components=self._dim, perplexity=15, random_state=opt.seed)
-        if self._full:
+
+        if self.reduce is None:
             self._result = self._model.fit_transform(self._data)
         else:
-            self._model.fit(self._data[:reduce])
+            fraction = int(self._data.shape[0] * self.reduce / 100)
+            self._model.fit(self._data[:fraction])
             self._result = self._model.transform(self._data)
 
-    def plot(self, iter=0, show=True, gt_plot=0, prefix=''):
+    def plot(self, iter=0, show=True, prefix=''):
         if iter is not None:
             self._counter = iter
+        if 20 in self._labels:
+            self._labels = np.array(self._labels)
+            mask = self._labels == 20
+            self._labels[mask] = 10
+        plt.axis('off')
+
         plt.scatter(self._result[..., 0], self._result[..., 1],
-                    c=self._labels, s=self._sizes, alpha=0.5)
+                    c=self._labels, s=self._sizes, alpha=0.6)
         plt.grid(True)
+        if prefix == 'time_':
+            plt.colorbar()
         if self._save:
             # plt.figure(figsize=(1))
             dir_check(join(opt.dataset_root, 'plots'))
@@ -78,6 +88,8 @@ class Visual(object):
             name = prefix + '%s_%s_' % (opt.subaction,  opt.model_name)
             name += '_%s.png' % self._mode
             folder_name = opt.log_str
+            dir_check(join(opt.dataset_root, 'plots', opt.subaction, folder_name))
+            folder_name = join(opt.log_str, opt.vis_mode)
             dir_check(join(opt.dataset_root, 'plots', opt.subaction, folder_name))
             plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
                              folder_name, name), dpi=400)
@@ -94,13 +106,21 @@ class Visual(object):
         self._sizes = []
         self.size = 1
 
-    def fit(self, data, labels, prefix):
+    def color(self, labels, prefix, reset=False):
+        plt.clf()
+        self._labels = labels
+        self.plot(show=False, prefix=prefix)
+        if reset:
+            self.reset()
+
+    def fit(self, data, labels, prefix, reset=True):
         self._data = data
         self._labels = labels
         self._sizes += [self.size] * len(labels)
         self.fit_data()
         self.plot(show=False, prefix=prefix)
-        self.reset()
+        if reset:
+            self.reset()
 
 def bounds(segm):
     start_label = segm[0]

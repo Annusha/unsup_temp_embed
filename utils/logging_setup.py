@@ -11,6 +11,7 @@ import logging
 import datetime
 import sys
 import re
+import os
 from os.path import join
 
 from utils.arg_pars import opt
@@ -29,6 +30,8 @@ filename = search.group(1)
 
 def path_logger():
     global logger
+    if not os.path.exists(join(opt.dataset_root, 'logs')):
+        os.mkdir(join(opt.dataset_root, 'logs'))
     path_logging = join(opt.dataset_root, 'logs', '%s%s(%s)' %
                         (opt.log_str, filename,
                          str(datetime.datetime.now())))

@@ -11,9 +11,12 @@ from corpus import Corpus
 from utils.arg_pars import opt
 from utils.logging_setup import logger
 from utils.util_functions import timing, update_opt_str, join_return_stat, parse_return_stat
-from utils.grid_search import grid_search_tcn as gs
+# from utils.grid_search import grid_search_tcn as gs
+# from utils.grid_search import grid_search as gs
+from utils.grid_search import grid_search_seeds as gs
 import BF_utils.update_argpars as bf_utils
 import YTI_utils.update_argpars as yti_utils
+import FS_utils.update_argpars as fs_utils
 
 
 @timing
@@ -72,6 +75,8 @@ def all_actions():
         actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
     if opt.dataset == 'yti':
         actions = ['changing_tire', 'coffee', 'jump_car', 'cpr', 'repot']
+    if opt.dataset == 'fs':
+        actions = ['-1.', '-2.']
     lr_init = opt.lr
     for action in actions:
         opt.subaction = action
@@ -89,7 +94,10 @@ def all_actions():
 @timing
 def grid_search():
     # f = temp_embed(iterations=1)
-    gs(temp_embed)
+    if opt.all:
+        gs(all_actions, opt.seed)
+    else:
+        gs(temp_embed)
 
 
 def resume_segmentation(iterations=10):
@@ -110,9 +118,11 @@ if __name__ == '__main__':
         bf_utils.update()
     if opt.dataset == 'yti':
         yti_utils.update()
-    if opt.all:
-        all_actions()
-    elif opt.grid_search:
+    if opt.dataset == 'fs':
+        fs_utils.update()
+    if opt.grid_search:
         grid_search()
+    elif opt.all:
+        all_actions()
     else:
         temp_embed()

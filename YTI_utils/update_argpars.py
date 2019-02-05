@@ -23,6 +23,7 @@ def update():
     opt.feature_dim = 3000
 
     opt.bg = True
+    opt.high = False
 
     update_opt_str()
 

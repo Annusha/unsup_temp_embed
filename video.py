@@ -87,9 +87,26 @@ class Video(object):
     def features(self):
         """Load features given path if haven't do it before"""
         if self._features is None:
-            self._features = np.loadtxt(self.path)
-            if opt.data_type == 2 and opt.dataset == 'bf':
+            if opt.ext == 'npy':
+                self._features = np.load(self.path)
+            else:
+                self._features = np.loadtxt(self.path)
+            if opt.data_type == 2 and opt.dataset in ['bf', 'fs']:
                 self._features = self._features[1:, 1:]
+
+            if opt.data_type == 0 and opt.dataset == 'fs':
+                self._features = self._features.T
+
+            if opt.f_norm:  # normalize features
+                mask = np.ones(self._features.shape[0], dtype=bool)
+                for rdx, row in enumerate(self._features):
+                    if np.sum(row) == 0:
+                        mask[rdx] = False
+                z = self._features[mask] - np.mean(self._features[mask], axis=0)
+                z = z / np.std(self._features[mask], axis=0)
+                self._features = np.zeros(self._features.shape)
+                self._features[mask] = z
+
             self.n_frames = self._features.shape[0]
             self._likelihood_grid = np.zeros((self.n_frames, self._K))
             self._valid_likelihood = np.zeros((self.n_frames, self._K), dtype=bool)

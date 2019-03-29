@@ -21,9 +21,10 @@ from utils.util_functions import timing, dir_check
 
 
 class GroundTruth:
-    def __init__(self):
+    def __init__(self, frequency=1):
         self.label2index = {}
         self.index2label = {}
+        self.frequency = frequency
 
         self.gt = {}
         self.order = {}
@@ -70,8 +71,8 @@ class GroundTruth:
             self.gt = self.load_obj('gt_high')
             self.order = self.load_obj('order_high')
         else:
-            self.gt = self.load_obj('gt')
-            self.order = self.load_obj('order')
+            self.gt = self.load_obj('gt%d' % self.frequency)
+            self.order = self.load_obj('order%d' % self.frequency)
 
         if self.gt is None or self.order is None:
             self.gt, self.order = {}, {}
@@ -83,7 +84,9 @@ class GroundTruth:
                     local_order = []
                     curr_lab = -1
                     start, end = 0, 0
-                    for line in f:
+                    for line_idx, line in enumerate(f):
+                        if line_idx % self.frequency:
+                            continue
                         line = line.split()[0]
                         try:
                             labels.append(self.label2index[line])
@@ -106,8 +109,8 @@ class GroundTruth:
                 self.save_obj(self.gt, 'gt_high')
                 self.save_obj(self.order, 'order_high')
             else:
-                self.save_obj(self.gt, 'gt')
-                self.save_obj(self.order, 'order')
+                self.save_obj(self.gt, 'gt%d' % self.frequency)
+                self.save_obj(self.order, 'order%d' % self.frequency)
 
     def define_K(self, subaction):
         """Define number of subactions from ground truth labeling

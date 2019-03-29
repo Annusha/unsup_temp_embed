@@ -116,8 +116,13 @@ class Video(object):
         try:
             assert len(self.gt) == self.n_frames
         except AssertionError:
-            print(self.path, '# of gt and # of frames does not match %d' % len(self.gt))
-            if len(self.gt) - self.n_frames > 50:
+            print(self.path, '# of gt and # of frames does not match %d / %d' % (len(self.gt), self.n_frames))
+            if abs(len(self.gt) - self.n_frames) > 50:
+                if opt.data_type == 4:
+                    os.remove(os.path.join(opt.gt, self.name))
+                    os.remove(self.path)
+                    os.remove(os.path.join(opt.gt, 'mapping', 'gt.pkl'))
+                    os.remove(os.path.join(opt.gt, 'mapping', 'order.pkl'))
                 raise AssertionError
             else:
                 min_n = min(len(self.gt), self.n_frames)
@@ -145,6 +150,7 @@ class Video(object):
         self.temp = np.zeros(self.n_frames)
         for frame_idx in range(self.n_frames):
             self.temp[frame_idx] = frame_idx / self.n_frames
+            # self.temp[frame_idx] = frame_idx
 
     def _init_fg_mask(self):
         indexes = [i for i in range(self.n_frames) if i % 2]

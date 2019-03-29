@@ -18,6 +18,9 @@ import BF_utils.update_argpars as bf_utils
 import YTI_utils.update_argpars as yti_utils
 import FS_utils.update_argpars as fs_utils
 
+import numpy as np
+import os
+
 
 @timing
 def temp_embed(iterations=1):
@@ -29,6 +32,8 @@ def temp_embed(iterations=1):
         corpus.regression_training()
     if opt.model_name == 'nothing':
         corpus.without_temp_emed()
+
+    # return corpus.hist
 
     if opt.gaussian_cl:
         corpus.gaussian_clustering()
@@ -71,6 +76,7 @@ def temp_embed(iterations=1):
 @timing
 def all_actions():
     return_stat_all = None
+    # return_stat_all = np.zeros(100)
     if opt.dataset == 'bf':
         actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
     if opt.dataset == 'yti':
@@ -87,7 +93,10 @@ def all_actions():
             return_stat_single = temp_embed(iterations=1)
         else:
             return_stat_single = temp_embed(iterations=5)
+        # return_stat_all += return_stat_single
         return_stat_all = join_return_stat(return_stat_all, return_stat_single)
+    logger.debug(return_stat_all)
+    # np.savetxt(os.path.join(opt.dataset_root, 'histogram.txt'), return_stat_all)
     parse_return_stat(return_stat_all)
 
 

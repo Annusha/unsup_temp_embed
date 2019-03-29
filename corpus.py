@@ -40,7 +40,7 @@ class Corpus(object):
             subaction: current name of complex activity
         """
         np.random.seed(opt.seed)
-        self.gt_map = GroundTruth()
+        self.gt_map = GroundTruth(frequency=opt.frame_frequency)
         self.gt_map.load_mapping()
         self._K = self.gt_map.define_K(subaction=subaction)
         logger.debug('%s  subactions: %d' % (subaction, self._K))
@@ -84,7 +84,7 @@ class Corpus(object):
     def _init_videos(self):
         logger.debug('.')
         gt_stat = Counter()
-        for root, dirs, files in os.walk(os.path.join(opt.data, 'ascii')):
+        for root, dirs, files in os.walk(os.path.join(opt.data, opt.subfolder)):
             if files:
                 for filename in files:
                     # pick only videos with certain complex action
@@ -198,6 +198,10 @@ class Corpus(object):
         mse = np.sum((gt_relative_time - relative_time)**2)
         mse = mse / len(relative_time)
         logger.debug('MLP training: MSE: %f' % mse)
+        hist, bin_edges = np.histogram(relative_time, bins=np.linspace(0, 1, 101))
+        logger.debug('Histogram: %s' % str(hist))
+        logger.debug('%s' % str(bin_edges))
+        self.hist = hist
 
     @timing
     def gaussian_clustering(self):

@@ -76,7 +76,7 @@ class Visual(object):
         plt.axis('off')
 
         plt.scatter(self._result[..., 0], self._result[..., 1],
-                    c=self._labels, s=self._sizes, alpha=0.6)
+                    c=self._labels, s=self._sizes, alpha=1)
         plt.grid(True)
         if prefix == 'time_':
             plt.colorbar()

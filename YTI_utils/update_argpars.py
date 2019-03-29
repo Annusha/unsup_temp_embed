@@ -21,6 +21,7 @@ def update():
 
     opt.ext = 'txt'
     opt.feature_dim = 3000
+    opt.embed_dim = 200
 
     opt.bg = True
     opt.high = False

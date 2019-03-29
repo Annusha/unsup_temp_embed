@@ -18,23 +18,28 @@ parser = argparse.ArgumentParser()
 ###########################################
 # data
 actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
-parser.add_argument('--subaction', default='juice',
+parser.add_argument('--subaction', default='coffee',
                     help='measure accuracy for different subactivities scrambledegg')
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
                          'dataset')
-parser.add_argument('--dataset', default='bf',
+parser.add_argument('--dataset', default='yti',
                     help='Breakfast dataset (bf) or YouTube Instructional (yti)'
                          'or 50 Salads (fs)')
-parser.add_argument('--data_type', default=1, type=int,
-                    help='valid just for Breakfast dataset and 50 Salads'
+parser.add_argument('--data_type', default=5, type=int,
+                    help='valid just for Breakfast dataset and 50 Salads (subaction=rgb)'
                          '0: kinetics - features from the stream network'
                          '1: data - normalized features'
                          '2: s1 - features without normalization'
                          '3: videos'
+                         '4: OPN' 
+                         '5: videovector'
+                         '6: data sabsampled with frequency 5'
                          ''
                          '0: kinetics'
                          '2: s1 - dense trajectories wo normalization')
+parser.add_argument('--frame_frequency', default=1, type=int,
+                    help='define if frequency of sampled frames and ground truth frequency are different')
 parser.add_argument('--f_norm', default=False, type=bool,
                     help='normalization of the features')
 
@@ -73,7 +78,7 @@ parser.add_argument('--num_workers', default=4,
                     help='number of threads for dataloading')
 parser.add_argument('--embed_dim', default=20, type=int,
                     help='number of dimensions in embedded space')
-parser.add_argument('--epochs', default=30, type=int,
+parser.add_argument('--epochs', default=60, type=int,
                     help='number of epochs for training embedding')
 parser.add_argument('--gt_training', default=False, type=bool,
                     help='training embedding either with gt labels '
@@ -145,11 +150,11 @@ parser.add_argument('--resume_str',
                     # default='!norm.!conc._%s_mlp_!pose_full_vae0_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_!zeros_b0_v1_l0_c1_',
                     # default='grid.vit._%s_mlp_!pose_full_vae1_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_zeros_b0_v1_l0_c1_',
                     # norm.!conc.
-                    default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
+                    # default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
                     # default='norm.conc._%s_mlp_!pose_full_vae1_time10.0_epochs60_embed20_n1_ordering_gmm1_one_!gt_lr0.0001_lr_!zeros_b0_v1_l0_c1_',
 
                     # for YouTube Instructions dataset
-                    # default='yti.(200,90,-3)_%s_mlp_!pose_full_vae0_time10.0_epochs90_embed200_n4_!ordering_gmm1_one_!gt_lr0.001_lr_zeros_b1_v1_l0_c1_',
+                    default='yti.(200,90,-3)_%s_mlp_!pose_full_vae0_time10.0_epochs90_embed200_n4_!ordering_gmm1_one_!gt_lr0.001_lr_zeros_b1_v1_l0_c1_',
 
                     # for 50 salads dataset
                     # default='50s.gs._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
@@ -163,11 +168,11 @@ parser.add_argument('--resume_str',
 
 ###########################################
 # additional
-parser.add_argument('--reduced', default=15, type=int,
-                    help='check smth using only ~15 videos')
+parser.add_argument('--reduced', default=0, type=int,
+                    help='define how much videos to use')
 parser.add_argument('--grid_search', default=False, type=bool,
                     help='grid search for optimal parameters')
-parser.add_argument('--vis', default=True, type=bool,
+parser.add_argument('--vis', default=False, type=bool,
                     help='save visualisation of embeddings')
 parser.add_argument('--vis_mode', default='pca',
                     help='pca / tsne')
@@ -175,7 +180,7 @@ parser.add_argument('--model_name', default='mlp',
                     help='mlp / tcn')
 parser.add_argument('--test_set', default=False, type=bool,
                     help='check if the network if overfitted or not')
-parser.add_argument('--prefix', default='vis.',
+parser.add_argument('--prefix', default='yti.unsup.',
                     help='prefix for log file')
 
 

@@ -53,6 +53,7 @@ def create_model():
     torch.manual_seed(opt.seed)
     model = MLP().cuda()
     loss = nn.MSELoss(reduction='sum').cuda()
+    # loss = nn.MSELoss().cuda()
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=opt.lr,
                                  weight_decay=opt.weight_decay)

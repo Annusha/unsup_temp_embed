@@ -24,7 +24,7 @@ def update():
     opt.embed_dim = 200
 
     opt.bg = True
-    opt.high = False
+    opt.gr_lev = ''
 
     update_opt_str()
 

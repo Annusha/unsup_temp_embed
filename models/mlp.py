@@ -51,8 +51,8 @@ class MLP(nn.Module):
 
 def create_model():
     torch.manual_seed(opt.seed)
-    model = MLP().cuda()
-    loss = nn.MSELoss(reduction='sum').cuda()
+    model = MLP().to(opt.device)
+    loss = nn.MSELoss(reduction='sum')
     # loss = nn.MSELoss().cuda()
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=opt.lr,

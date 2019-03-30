@@ -37,7 +37,7 @@ high['action_end'] = ['action_end']
 
 label2idx = {}
 idx2label = {}
-path = os.path.join(opt.dataset_root, opt.gt, 'mapping', 'map_high.txt')
+path = os.path.join(opt.dataset_root, opt.gt, 'mapping', 'mappinghigh.txt')
 with open(path, 'w') as f:
     for idx, (high_act, mid_acts) in enumerate(high.items()):
         for mid_act in mid_acts:

@@ -8,6 +8,7 @@ __date__ = 'August 2018'
 
 import numpy as np
 import os
+import os.path as ops
 import torch
 import re
 import matplotlib.pyplot as plt
@@ -100,10 +101,9 @@ class Corpus(object):
                             match = re.match(r'(\w*)\.\w*', filename)
                             gt_name = match.group(1)
                         # use extracted features from pretrained on gt embedding
-                        if opt.save_embed_feat:
-                            dir_check(os.path.join(opt.data, 'embed'))
-                            path = os.path.join(opt.data, 'embed', '%d_%d_%s' %
-                                                (opt.embed_dim, opt.data_type, gt_name))
+                        if opt.load_embed_feat:
+                            path = os.path.join(opt.data, 'embed', opt.subaction,
+                                                opt.resume_str % opt.subaction) + '_%s' % gt_name
                         else:
                             path = os.path.join(root, filename)
                         start = 0 if self._features is None else self._features.shape[0]
@@ -139,6 +139,11 @@ class Corpus(object):
             self._total_fg_mask = np.ones(len(self._features), dtype=bool)
 
     def regression_training(self):
+        if opt.load_embed_feat:
+            logger.debug('load precomputed features')
+            self._embedded_feat = self._features
+            return
+
         logger.debug('.')
 
         dataloader = load_reltime(videos=self._videos,
@@ -194,6 +199,8 @@ class Corpus(object):
                 embedded_feat = self._embedding.embedded(batch_features.float()).detach().numpy()
                 self._embedded_feat = join_data(self._embedded_feat, embedded_feat, np.vstack)
 
+        if opt.save_embed_feat:
+            self.save_embed_feat()
 
         mse = np.sum((gt_relative_time - relative_time)**2)
         mse = mse / len(relative_time)
@@ -273,9 +280,9 @@ class Corpus(object):
 
         ########################################################################
         # VISUALISATION
-        if opt.vis:
-            vis = Visual(mode='pca', full=True, save=True)
-            vis.fit(self._embedded_feat, labels_with_bg, 'gmm_')
+        # if opt.vis:
+        #     vis = Visual(mode=opt.vis_mode, save=True)
+        #     vis.fit(self._embedded_feat, labels_with_bg, 'gmm_')
         ########################################################################
 
 
@@ -322,7 +329,7 @@ class Corpus(object):
                 total_indexes[video.global_range] = temp
 
             total_indexes = np.array(total_indexes, dtype=np.bool)
-            if opt.save_embed_feat:
+            if opt.load_embed_feat:
                 feature = self._features[total_indexes, :]
             else:
                 feature = self._embedded_feat[total_indexes, :]
@@ -376,7 +383,7 @@ class Corpus(object):
 
     def _video_likelihood_grid(self, video_idx):
         video = self._videos[video_idx]
-        if opt.save_embed_feat:
+        if opt.load_embed_feat:
             features = self._features[video.global_range]
         else:
             features = self._embedded_feat[video.global_range]
@@ -725,6 +732,13 @@ class Corpus(object):
             video.resume()
         self._count_subact()
 
+    def save_embed_feat(self):
+        dir_check(ops.join(opt.data, 'embed'))
+        dir_check(ops.join(opt.data, 'embed', opt.subaction))
+        for video in self._videos:
+            video_features = self._embedded_feat[video.global_range]
+            feat_name = opt.resume_str + '_%s' % video.name
+            np.savetxt(ops.join(opt.data, 'embed', opt.subaction, feat_name), video_features)
 
 
 

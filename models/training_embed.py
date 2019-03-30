@@ -54,7 +54,8 @@ def training(train_loader, epochs, save, **kwargs):
 
     logger.debug('epochs: %s', epochs)
     for epoch in range(epochs):
-        model.cuda()
+        # model.cuda()
+        model.to(opt.device)
         model.train()
 
         logger.debug('Epoch # %d' % epoch)
@@ -67,8 +68,12 @@ def training(train_loader, epochs, save, **kwargs):
         end = time.time()
         for i, (features, labels) in enumerate(train_loader):
             data_time.update(time.time() - end)
-            features = features.float().cuda(non_blocking=True)
-            labels = labels.float().cuda()
+            features = features.float()
+            labels = labels.float().to(opt.device)
+            if opt.device == 'cuda':
+                features = features.cuda(non_blocking=True)
+            # features = features.float().cuda(non_blocking=True)
+            # labels = labels.float().cuda()
             output = model(features)
             loss_values = loss(output, labels)
             losses.update(loss_values.item(), features.size(0))
@@ -90,14 +95,15 @@ def training(train_loader, epochs, save, **kwargs):
         logger.debug('loss: %f' % losses.avg)
         losses.reset()
 
+    opt.resume_str = join(opt.dataset_root, 'models', kwargs['name'],
+                          '%s.pth.tar' % opt.log_str)
     if save:
         save_dict = {'epoch': epoch,
                      'state_dict': model.state_dict(),
                      'optimizer': optimizer.state_dict()}
         dir_check(join(opt.dataset_root, 'models'))
         dir_check(join(opt.dataset_root, 'models', kwargs['name']))
-        torch.save(save_dict, join(opt.dataset_root, 'models', kwargs['name'],
-                                   '%s.pth.tar' % opt.log_str))
+        torch.save(save_dict, opt.resume_str)
     return model
 
 
@@ -108,7 +114,13 @@ def load_model(name='mlp'):
         # resume_str = opt.resume_str
     else:
         resume_str = opt.log_str
-    checkpoint = torch.load(join(opt.dataset_root, 'models', name,
+    opt.resume_str = resume_str
+    if opt.device == 'cpu':
+        checkpoint = torch.load(join(opt.dataset_root, 'models', name,
+                                     '%s.pth.tar' % resume_str),
+                                map_location='cpu')
+    else:
+        checkpoint = torch.load(join(opt.dataset_root, 'models', name,
                                  '%s.pth.tar' % resume_str))
     checkpoint = checkpoint['state_dict']
     logger.debug('loaded model: ' + '%s.pth.tar' % resume_str)

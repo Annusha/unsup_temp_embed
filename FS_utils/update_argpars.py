@@ -23,6 +23,7 @@ def update():
 
     opt.ext = ['npy', '', 'txt'][opt.data_type]
     opt.feature_dim = [2048, 0, 64][opt.data_type]
+    opt.embed_dim = 30
 
     opt.bg = False
 

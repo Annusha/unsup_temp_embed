@@ -65,7 +65,7 @@ def update():
 
 
     opt.bg = False
-    opt.high = False
+    opt.gr_lev = ''
 
     if opt.all:
         opt.subaction = 'all'

@@ -31,10 +31,7 @@ class GroundTruth:
 
     def create_mapping(self):
         root = os.path.join(opt.gt, 'mapping')
-        if opt.high:
-            filename = 'map_high.txt'
-        else:
-            filename = 'mapping.txt'
+        filename = 'mapping%s.txt' % opt.gr_lev
 
         with open(os.path.join(root, filename), 'r') as f:
             for line in f:
@@ -67,12 +64,8 @@ class GroundTruth:
 
     @timing
     def load_gt(self):
-        if opt.high:
-            self.gt = self.load_obj('gt_high')
-            self.order = self.load_obj('order_high')
-        else:
-            self.gt = self.load_obj('gt%d' % self.frequency)
-            self.order = self.load_obj('order%d' % self.frequency)
+        self.gt = self.load_obj('gt%d%s' % (self.frequency, opt.gr_lev))
+        self.order = self.load_obj('order%d%s' % (self.frequency, opt.gr_lev))
 
         if self.gt is None or self.order is None:
             self.gt, self.order = {}, {}
@@ -105,12 +98,8 @@ class GroundTruth:
 
                         local_order.append([curr_lab, start, end])
                         self.order[filename] = local_order
-            if opt.high:
-                self.save_obj(self.gt, 'gt_high')
-                self.save_obj(self.order, 'order_high')
-            else:
-                self.save_obj(self.gt, 'gt%d' % self.frequency)
-                self.save_obj(self.order, 'order%d' % self.frequency)
+            self.save_obj(self.gt, 'gt%d%s' % (self.frequency, opt.gr_lev))
+            self.save_obj(self.order, 'order%d%s' % (self.frequency, opt.gr_lev))
 
     def define_K(self, subaction):
         """Define number of subactions from ground truth labeling

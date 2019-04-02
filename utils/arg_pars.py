@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser()
 # data
 actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
 actions = 'rgb'  # fs
-parser.add_argument('--subaction', default='rgb',
+parser.add_argument('--subaction', default='tea',
                     help='measure accuracy for different subactivities scrambledegg')
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
@@ -140,12 +140,12 @@ parser.add_argument('--viterbi', default=True, type=bool)
 # save
 parser.add_argument('--save_model', default=True, type=bool,
                     help='save embedding model after training')
-parser.add_argument('--load_embed_feat', default=True,
+parser.add_argument('--load_embed_feat', default=False,
                     help='load features exctracted from the embedding')
-parser.add_argument('--save_embed_feat', default=False,
+parser.add_argument('--save_embed_feat', default=True,
                     help='save features after training the embedding')
 parser.add_argument('--save_likelihood', default=False, type=bool)
-parser.add_argument('--resume_segmentation', default=True, type=bool)
+parser.add_argument('--resume_segmentation', default=False, type=bool)
 parser.add_argument('--resume', default=True, type=bool,
                     help='load model for embeddings, if positive then it is number of '
                          'epoch which should be loaded')
@@ -178,8 +178,8 @@ parser.add_argument('--grid_search', default=False, type=bool,
                     help='grid search for optimal parameters')
 parser.add_argument('--vis', default=True, type=bool,
                     help='save visualisation of embeddings')
-parser.add_argument('--vis_mode', default='pca',
-                    help='pca / tsne')
+parser.add_argument('--vis_mode', default='segm',
+                    help='pca / tsne / segm')
 parser.add_argument('--model_name', default='mlp',
                     help='mlp / tcn')
 parser.add_argument('--test_set', default=False, type=bool,

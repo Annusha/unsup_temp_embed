@@ -676,54 +676,38 @@ class Corpus(object):
             # VISUALISATION
 
             # gt_plot_iter = [[0, 1], [0]][self.iter != 0]
-            long_pr = [self._label2gt[i] for i in long_pr]
+            if opt.vis_mode != 'segm':
+                long_pr = [self._label2gt[i] for i in long_pr]
 
-            if self.vis is None:
-                self.vis = Visual(mode=opt.vis_mode, save=True, reduce=None)
-                self.vis.fit(self._embedded_feat, long_pr, 'iter_%d' % self.iter)
-            else:
-                reset = prefix == 'final'
-                self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
-
-            # vis.fit(self._embedded_feat, long_pr, 'iter_%d_' % self.iter)
-            # for gt_plot in gt_plot_iter:
-            #     vis.data = self._embedded_feat
-            #     vis.labels = [long_pr, long_gt][gt_plot]
-            #     if mode == 'pca':
-            #         vis.fit_data()
-            #     else:  # mode == 'tsne'
-            #         vis.fit_data(reduce=int(0.3 * self._features.shape[0]))
-            #     prefix = ''
-            #     if opt.gaussian_cl:
-            #         prefix += 'gmm'
-            #     if opt.rt_cl_concat:
-            #         prefix += 'cc'
-            #     vis.plot(iter=self.iter, show=False, gt_plot=gt_plot, prefix=prefix)
-            #     vis.reset()
-
-            ####################################################################
-            # segmentation visualisation
-            if prefix == 'final':
-                colors = {}
-                cmap = plt.get_cmap('tab20')
-                for label_idx, label in enumerate(np.unique(long_gt)):
-                    if label == -1:
-                        colors[label] = (0, 0, 0)
+                    if self.vis is None:
+                        self.vis = Visual(mode=opt.vis_mode, save=True, reduce=None)
+                        self.vis.fit(self._embedded_feat, long_pr, 'iter_%d' % self.iter)
                     else:
-                        # colors[label] = (np.random.rand(), np.random.rand(), np.random.rand())
-                        colors[label] = cmap(label_idx / len(np.unique(long_gt)))
+                        reset = prefix == 'final'
+                        self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
+            else:
+                ####################################################################
+                # segmentation visualisation
+                if prefix == 'final':
+                    colors = {}
+                    cmap = plt.get_cmap('tab20')
+                    for label_idx, label in enumerate(np.unique(long_gt)):
+                        if label == -1:
+                            colors[label] = (0, 0, 0)
+                        else:
+                            # colors[label] = (np.random.rand(), np.random.rand(), np.random.rand())
+                            colors[label] = cmap(label_idx / len(np.unique(long_gt)))
 
-                dir_check(os.path.join(opt.dataset_root, 'plots'))
-                dir_check(os.path.join(opt.dataset_root, 'plots', opt.subaction))
-                fold_path = os.path.join(opt.dataset_root, 'plots', opt.subaction, 'segmentation')
-                dir_check(fold_path)
-                for video in self._videos:
-                    path = os.path.join(fold_path, video.name + '.png')
-                    name = video.name.split('_')
-                    name = '_'.join(name[-2:])
-                    plot_segm(path, video.segmentation, colors, name=name)
-            ####################################################################
-
+                    dir_check(os.path.join(opt.dataset_root, 'plots'))
+                    dir_check(os.path.join(opt.dataset_root, 'plots', opt.subaction))
+                    fold_path = os.path.join(opt.dataset_root, 'plots', opt.subaction, 'segmentation')
+                    dir_check(fold_path)
+                    for video in self._videos:
+                        path = os.path.join(fold_path, video.name + '.png')
+                        name = video.name.split('_')
+                        name = '_'.join(name[-2:])
+                        plot_segm(path, video.segmentation, colors, name=name)
+                ####################################################################\
         return accuracy.frames()
 
     def resume_segmentation(self):

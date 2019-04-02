@@ -703,30 +703,31 @@ class Corpus(object):
 
             ####################################################################
             # segmentation visualisation
-            # if prefix == 'final':
-            #     colors = {}
-            #     cmap = plt.get_cmap('tab20')
-            #     for label_idx, label in enumerate(np.unique(long_gt)):
-            #         if label == -1:
-            #             colors[label] = (0, 0, 0)
-            #         else:
-            #             # colors[label] = (np.random.rand(), np.random.rand(), np.random.rand())
-            #             colors[label] = cmap(label_idx / len(np.unique(long_gt)))
-            #
-            #     dir_check(os.path.join(opt.dataset_root, 'plots'))
-            #     dir_check(os.path.join(opt.dataset_root, 'plots', opt.subaction))
-            #     fold_path = os.path.join(opt.dataset_root, 'plots', opt.subaction, 'segmentation')
-            #     dir_check(fold_path)
-            #     for video in self._videos:
-            #         path = os.path.join(fold_path, video.name + '.png')
-            #         name = video.name.split('_')
-            #         name = '_'.join(name[-2:])
-            #         plot_segm(path, video.segmentation, colors, name=name)
+            if prefix == 'final':
+                colors = {}
+                cmap = plt.get_cmap('tab20')
+                for label_idx, label in enumerate(np.unique(long_gt)):
+                    if label == -1:
+                        colors[label] = (0, 0, 0)
+                    else:
+                        # colors[label] = (np.random.rand(), np.random.rand(), np.random.rand())
+                        colors[label] = cmap(label_idx / len(np.unique(long_gt)))
+
+                dir_check(os.path.join(opt.dataset_root, 'plots'))
+                dir_check(os.path.join(opt.dataset_root, 'plots', opt.subaction))
+                fold_path = os.path.join(opt.dataset_root, 'plots', opt.subaction, 'segmentation')
+                dir_check(fold_path)
+                for video in self._videos:
+                    path = os.path.join(fold_path, video.name + '.png')
+                    name = video.name.split('_')
+                    name = '_'.join(name[-2:])
+                    plot_segm(path, video.segmentation, colors, name=name)
             ####################################################################
 
         return accuracy.frames()
 
     def resume_segmentation(self):
+        logger.debug('resume precomputed segmentation')
         for video in self._videos:
             video.iter = self.iter
             video.resume()

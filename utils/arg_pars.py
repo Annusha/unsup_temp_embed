@@ -19,15 +19,15 @@ parser = argparse.ArgumentParser()
 # data
 actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
 actions = 'rgb'  # fs
-parser.add_argument('--subaction', default='coffee',
+parser.add_argument('--subaction', default='rgb',
                     help='measure accuracy for different subactivities scrambledegg')
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
                          'dataset')
-parser.add_argument('--dataset', default='bf',
+parser.add_argument('--dataset', default='fs',
                     help='Breakfast dataset (bf) or YouTube Instructional (yti)'
                          'or 50 Salads (fs)')
-parser.add_argument('--data_type', default=1, type=int,
+parser.add_argument('--data_type', default=2, type=int,
                     help='valid just for Breakfast dataset and 50 Salads (subaction=rgb)'
                          '0: kinetics - features from the stream network'
                          '1: data - normalized features'
@@ -53,7 +53,7 @@ parser.add_argument('--data', default='',
                     help='direct path to your data features')
 parser.add_argument('--gt', default='groundTruth',
                     help='folder with ground truth labels')
-parser.add_argument('--gr_lev', default='eval',
+parser.add_argument('--gr_lev', default='',
                     help='switch between different levels of label granularity')
 parser.add_argument('--feature_dim', default=64,
                     help='feature dimensionality')
@@ -145,7 +145,7 @@ parser.add_argument('--load_embed_feat', default=True,
 parser.add_argument('--save_embed_feat', default=False,
                     help='save features after training the embedding')
 parser.add_argument('--save_likelihood', default=False, type=bool)
-parser.add_argument('--resume_segmentation', default=False, type=bool)
+parser.add_argument('--resume_segmentation', default=True, type=bool)
 parser.add_argument('--resume', default=True, type=bool,
                     help='load model for embeddings, if positive then it is number of '
                          'epoch which should be loaded')
@@ -154,7 +154,7 @@ parser.add_argument('--resume_str',
                     # default='!norm.!conc._%s_mlp_!pose_full_vae0_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_!zeros_b0_v1_l0_c1_',
                     # default='grid.vit._%s_mlp_!pose_full_vae1_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_zeros_b0_v1_l0_c1_',
                     # norm.!conc. (main)
-                    default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
+                    # default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
                     # default='norm.conc._%s_mlp_!pose_full_vae1_time10.0_epochs60_embed20_n1_ordering_gmm1_one_!gt_lr0.0001_lr_!zeros_b0_v1_l0_c1_',
 
                     # for YouTube Instructions dataset
@@ -162,7 +162,7 @@ parser.add_argument('--resume_str',
 
                     # for 50 salads dataset : -1 and -2 separately, and together
                     # default='50s.gs._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
-                    # default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
+                    default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
 
                     # for Breakfast rank model
                     # default='rank._%s_rank_!pose_full_vae0_time10.0_epochs30_embed30_n2_!ordering_gmm1_one_!gt_lr1e-06_lr_!zeros_b0_v1_l0_c1_b0_',
@@ -184,7 +184,7 @@ parser.add_argument('--model_name', default='mlp',
                     help='mlp / tcn')
 parser.add_argument('--test_set', default=False, type=bool,
                     help='check if the network if overfitted or not')
-parser.add_argument('--device', default='cpu',
+parser.add_argument('--device', default='cuda',
                     help='cpu | cuda')
 parser.add_argument('--prefix', default='test.vis.',
                     help='prefix for log file')

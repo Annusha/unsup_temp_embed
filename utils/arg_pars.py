@@ -19,15 +19,15 @@ parser = argparse.ArgumentParser()
 # data
 actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
 actions = 'rgb'  # fs
-parser.add_argument('--subaction', default='tea',
+parser.add_argument('--subaction', default='scrambledegg',
                     help='measure accuracy for different subactivities scrambledegg')
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
                          'dataset')
-parser.add_argument('--dataset', default='fs',
+parser.add_argument('--dataset', default='bf',
                     help='Breakfast dataset (bf) or YouTube Instructional (yti)'
                          'or 50 Salads (fs)')
-parser.add_argument('--data_type', default=2, type=int,
+parser.add_argument('--data_type', default=5, type=int,
                     help='valid just for Breakfast dataset and 50 Salads (subaction=rgb)'
                          '0: kinetics - features from the stream network'
                          '1: data - normalized features'
@@ -36,6 +36,7 @@ parser.add_argument('--data_type', default=2, type=int,
                          '4: OPN' 
                          '5: videovector'
                          '6: data sabsampled with frequency 5'
+                         '7: video darwin'
                          ''
                          '0: kinetics'
                          '2: s1 - dense trajectories wo normalization')
@@ -142,7 +143,7 @@ parser.add_argument('--save_model', default=True, type=bool,
                     help='save embedding model after training')
 parser.add_argument('--load_embed_feat', default=False,
                     help='load features exctracted from the embedding')
-parser.add_argument('--save_embed_feat', default=True,
+parser.add_argument('--save_embed_feat', default=False,
                     help='save features after training the embedding')
 parser.add_argument('--save_likelihood', default=False, type=bool)
 parser.add_argument('--resume_segmentation', default=False, type=bool)
@@ -154,7 +155,7 @@ parser.add_argument('--resume_str',
                     # default='!norm.!conc._%s_mlp_!pose_full_vae0_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_!zeros_b0_v1_l0_c1_',
                     # default='grid.vit._%s_mlp_!pose_full_vae1_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_zeros_b0_v1_l0_c1_',
                     # norm.!conc. (main)
-                    # default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
+                    default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
                     # default='norm.conc._%s_mlp_!pose_full_vae1_time10.0_epochs60_embed20_n1_ordering_gmm1_one_!gt_lr0.0001_lr_!zeros_b0_v1_l0_c1_',
 
                     # for YouTube Instructions dataset
@@ -162,7 +163,7 @@ parser.add_argument('--resume_str',
 
                     # for 50 salads dataset : -1 and -2 separately, and together
                     # default='50s.gs._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
-                    default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
+                    # default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
 
                     # for Breakfast rank model
                     # default='rank._%s_rank_!pose_full_vae0_time10.0_epochs30_embed30_n2_!ordering_gmm1_one_!gt_lr1e-06_lr_!zeros_b0_v1_l0_c1_b0_',
@@ -172,13 +173,13 @@ parser.add_argument('--resume_str',
 
 ###########################################
 # additional
-parser.add_argument('--reduced', default=10, type=int,
+parser.add_argument('--reduced', default=0, type=int,
                     help='define how much videos to use')
 parser.add_argument('--grid_search', default=False, type=bool,
                     help='grid search for optimal parameters')
-parser.add_argument('--vis', default=True, type=bool,
+parser.add_argument('--vis', default=False, type=bool,
                     help='save visualisation of embeddings')
-parser.add_argument('--vis_mode', default='segm',
+parser.add_argument('--vis_mode', default='tsne',
                     help='pca / tsne / segm')
 parser.add_argument('--model_name', default='mlp',
                     help='mlp / tcn')
@@ -186,7 +187,7 @@ parser.add_argument('--test_set', default=False, type=bool,
                     help='check if the network if overfitted or not')
 parser.add_argument('--device', default='cuda',
                     help='cpu | cuda')
-parser.add_argument('--prefix', default='test.vis.',
+parser.add_argument('--prefix', default='videovector.',
                     help='prefix for log file')
 
 

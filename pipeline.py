@@ -123,6 +123,7 @@ def resume_segmentation(iterations=10):
 
 
 if __name__ == '__main__':
+    print('param')
     if opt.dataset == 'bf':
         bf_utils.update()
     if opt.dataset == 'yti':

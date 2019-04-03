@@ -18,6 +18,7 @@ import pickle
 
 from utils.arg_pars import opt
 from utils.util_functions import timing, dir_check
+from utils.logging_setup import logger
 
 
 class GroundTruth:
@@ -68,6 +69,7 @@ class GroundTruth:
         self.order = self.load_obj('order%d%s' % (self.frequency, opt.gr_lev))
 
         if self.gt is None or self.order is None:
+            logger.debug('cannot load -> create mapping')
             self.gt, self.order = {}, {}
             for filename in os.listdir(opt.gt):
                 if os.path.isdir(os.path.join(opt.gt, filename)):
@@ -100,6 +102,8 @@ class GroundTruth:
                         self.order[filename] = local_order
             self.save_obj(self.gt, 'gt%d%s' % (self.frequency, opt.gr_lev))
             self.save_obj(self.order, 'order%d%s' % (self.frequency, opt.gr_lev))
+        else:
+            logger.debug('successfully loaded')
 
     def define_K(self, subaction):
         """Define number of subactions from ground truth labeling
@@ -124,6 +128,7 @@ class GroundTruth:
             self.gt[key] = sparse_segm
 
     def load_mapping(self):
+        logger.debug('load or create mapping')
         self.create_mapping()
         self.load_gt()
 

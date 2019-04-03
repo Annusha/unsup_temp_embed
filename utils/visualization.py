@@ -21,7 +21,7 @@ from utils.util_functions import dir_check, timing
 
 
 class Visual(object):
-    def __init__(self, mode='pca', dim=2, reduce=None, save=False):
+    def __init__(self, mode='pca', dim=2, reduce=None, save=False, svg=False):
 
         self._mode = mode
         self._model = None
@@ -34,6 +34,7 @@ class Visual(object):
         self.size = 1  # size of dots
         self.reduce = reduce
         self._save = save
+        self.svg = svg
 
     @property
     def data(self):
@@ -86,13 +87,18 @@ class Visual(object):
             dir_check(join(opt.dataset_root, 'plots', opt.subaction))
             # name = ['iter%d_' % self._counter, 'gt_'][gt_plot]
             name = prefix + '%s_%s_' % (opt.subaction,  opt.model_name)
-            name += '_%s.png' % self._mode
             folder_name = opt.log_str
             dir_check(join(opt.dataset_root, 'plots', opt.subaction, folder_name))
             folder_name = join(opt.log_str, opt.vis_mode)
             dir_check(join(opt.dataset_root, 'plots', opt.subaction, folder_name))
+            if self.svg:
+                name += '_%s.svg' % self._mode
+            else:
+                name += '_%s.png' % self._mode
+                # plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
+                #                  folder_name, name), dpi=400)
             plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
-                             folder_name, name), dpi=400)
+                             folder_name, name), transparent=True, dpi=500)
             # else:
             #     plt.savefig(join(opt.dataset_root, 'plots', opt.subaction, name), dpi=400)
         if show:

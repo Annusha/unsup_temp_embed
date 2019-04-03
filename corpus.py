@@ -107,11 +107,15 @@ class Corpus(object):
                         else:
                             path = os.path.join(root, filename)
                         start = 0 if self._features is None else self._features.shape[0]
-                        video = Video(path, K=self._K,
-                                      gt=self.gt_map.gt[gt_name],
-                                      name=gt_name,
-                                      start=start,
-                                      with_bg=self._with_bg)
+                        try:
+                            video = Video(path, K=self._K,
+                                          gt=self.gt_map.gt[gt_name],
+                                          name=gt_name,
+                                          start=start,
+                                          with_bg=self._with_bg)
+                        except AssertionError:
+                            logger.debug('Assertion Error: %s' % gt_name)
+                            continue
                         self._features = join_data(self._features, video.features(),
                                                    np.vstack)
 
@@ -122,6 +126,10 @@ class Corpus(object):
                         if opt.reduced:
                             if len(self._videos) > opt.reduced:
                                 break
+
+                        if opt.feature_dim > 100:
+                            if len(self._videos) % 20 == 0:
+                                logger.debug('loaded %d videos' % len(self._videos))
 
         # update global range within the current collection for each video
         for video in self._videos:
@@ -482,8 +490,8 @@ class Corpus(object):
 
         ########################################################################
         # VISUALISATION
-        if opt.vis:
-            self.vis = Visual(mode=opt.vis_mode, save=True)
+        if opt.vis and opt.vis_mode != 'segm':
+            self.vis = Visual(mode=opt.vis_mode, save=True, svg=False)
             postfix = ['', '+rt.cc.'][opt.rt_cl_concat]
             self.vis.fit(self._embedded_feat, long_gt, 'gt_', reset=False)
             self.vis.color(long_rt, 'time_')
@@ -679,12 +687,12 @@ class Corpus(object):
             if opt.vis_mode != 'segm':
                 long_pr = [self._label2gt[i] for i in long_pr]
 
-                    if self.vis is None:
-                        self.vis = Visual(mode=opt.vis_mode, save=True, reduce=None)
-                        self.vis.fit(self._embedded_feat, long_pr, 'iter_%d' % self.iter)
-                    else:
-                        reset = prefix == 'final'
-                        self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
+                if self.vis is None:
+                    self.vis = Visual(mode=opt.vis_mode, save=True, reduce=None)
+                    self.vis.fit(self._embedded_feat, long_pr, 'iter_%d' % self.iter)
+                else:
+                    reset = prefix == 'final'
+                    self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
             else:
                 ####################################################################
                 # segmentation visualisation
@@ -707,7 +715,8 @@ class Corpus(object):
                         name = video.name.split('_')
                         name = '_'.join(name[-2:])
                         plot_segm(path, video.segmentation, colors, name=name)
-                ####################################################################\
+                ####################################################################
+
         return accuracy.frames()
 
     def resume_segmentation(self):

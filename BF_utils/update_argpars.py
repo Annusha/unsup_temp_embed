@@ -58,12 +58,11 @@ def update():
                                 os.remove(os.path.join(opt.gt, filename))
                             except FileNotFoundError:
                                 pass
-        opt.model_name = 'nothing'
 
     if opt.data_type == 6:
         opt.model_name = 'mlp'
 
-    if opt.data_type == 7:
+    if opt.data_type in [0, 4, 5, 7]:
         opt.model_name = 'nothing'
 
 

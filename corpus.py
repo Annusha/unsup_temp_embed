@@ -491,7 +491,8 @@ class Corpus(object):
         ########################################################################
         # VISUALISATION
         if opt.vis and opt.vis_mode != 'segm':
-            self.vis = Visual(mode=opt.vis_mode, save=True, svg=False)
+            dot_path = '/media/data/kukleva/lab/50salads/plots/rgb/colormaps._rgb_!bg_cc1_data2_fs_dim30_ep60_!nm_gmm1_!gt_!l_lr0.001_mlp_!mal_size10_+d0_vit_/tsne/tsne.txt'
+            self.vis = Visual(mode=opt.vis_mode, save=True, svg=False, saved_dots=dot_path)
             postfix = ['', '+rt.cc.'][opt.rt_cl_concat]
             self.vis.fit(self._embedded_feat, long_gt, 'gt_', reset=False)
             self.vis.color(long_rt, 'time_')

@@ -21,8 +21,9 @@ from utils.util_functions import dir_check, timing
 
 
 class Visual(object):
-    def __init__(self, mode='pca', dim=2, reduce=None, save=False, svg=False):
+    def __init__(self, mode='pca', dim=2, reduce=None, save=False, svg=False, saved_dots=''):
 
+        # mpl.rcParams['image.cmap'] = 'cool'
         self._mode = mode
         self._model = None
         self._dim = dim
@@ -35,6 +36,7 @@ class Visual(object):
         self.reduce = reduce
         self._save = save
         self.svg = svg
+        self.saved_dots = saved_dots
 
     @property
     def data(self):
@@ -55,17 +57,20 @@ class Visual(object):
 
     @timing
     def fit_data(self):
-        if self._mode == 'pca':
-            self._model = PCA(n_components=self._dim, random_state=opt.seed)
-        if self._mode == 'tsne':
-            self._model = TSNE(n_components=self._dim, perplexity=15, random_state=opt.seed)
-
-        if self.reduce is None:
-            self._result = self._model.fit_transform(self._data)
+        if self.saved_dots:
+            self._result = np.loadtxt(self.saved_dots)
         else:
-            fraction = int(self._data.shape[0] * self.reduce / 100)
-            self._model.fit(self._data[:fraction])
-            self._result = self._model.transform(self._data)
+            if self._mode == 'pca':
+                self._model = PCA(n_components=self._dim, random_state=opt.seed)
+            if self._mode == 'tsne':
+                self._model = TSNE(n_components=self._dim, perplexity=15, random_state=opt.seed)
+
+            if self.reduce is None:
+                self._result = self._model.fit_transform(self._data)
+            else:
+                fraction = int(self._data.shape[0] * self.reduce / 100)
+                self._model.fit(self._data[:fraction])
+                self._result = self._model.transform(self._data)
 
     def plot(self, iter=0, show=True, prefix=''):
         if iter is not None:
@@ -98,9 +103,9 @@ class Visual(object):
                 # plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
                 #                  folder_name, name), dpi=400)
             plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
-                             folder_name, name), transparent=True, dpi=500)
-            # else:
-            #     plt.savefig(join(opt.dataset_root, 'plots', opt.subaction, name), dpi=400)
+                             folder_name, name), transparent=True, dpi=400)
+            np.savetxt(join(opt.dataset_root, 'plots', opt.subaction,
+                            folder_name, '%s.txt' % opt.vis_mode), self._result)
         if show:
             plt.show()
 
@@ -146,7 +151,7 @@ def bounds(segm):
 
 
 def plot_segm(path, segmentation, colors, name=''):
-    mpl.style.use('classic')
+    # mpl.style.use('classic')
     fig = plt.figure(figsize=(16, 4))
     plt.axis('off')
     plt.title(name, fontsize=20)

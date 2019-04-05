@@ -116,13 +116,16 @@ class Video(object):
         try:
             assert len(self.gt) == self.n_frames
         except AssertionError:
-            print(self.path, '# of gt and # of frames does not match %d / %d' % (len(self.gt), self.n_frames))
+            print(self.path, '# gt and # frames does not match %d / %d' % (len(self.gt), self.n_frames))
             if abs(len(self.gt) - self.n_frames) > 50:
                 if opt.data_type == 4:
                     os.remove(os.path.join(opt.gt, self.name))
                     os.remove(self.path)
-                    os.remove(os.path.join(opt.gt, 'mapping', 'gt.pkl'))
-                    os.remove(os.path.join(opt.gt, 'mapping', 'order.pkl'))
+                    try:
+                        os.remove(os.path.join(opt.gt, 'mapping', 'gt%d%s.pkl' % (opt.frame_frequency, opt.gr_lev)))
+                        os.remove(os.path.join(opt.gt, 'mapping', 'order%d%s.pkl' % (opt.frame_frequency, opt.gr_lev)))
+                    except FileNotFoundError:
+                        pass
                 raise AssertionError
             else:
                 min_n = min(len(self.gt), self.n_frames)

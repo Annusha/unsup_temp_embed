@@ -201,20 +201,17 @@ def merge(arr1, arr2):
 def update_opt_str():
     logs_args_map = {'model_name': '',
                      'reduced': 'size',
-                     'rt_concat': '+d',
                      'epochs': 'ep',
                      'embed_dim': 'dim',
                      'data_type': 'data',
-                     'ordering': 'mal',
-                     'gmm': 'gmm',
-                     'gt_training': 'gt',
                      'lr': 'lr',
                      'dataset': '',
                      'bg': 'bg',
-                     'viterbi': 'vit',
-                     'label': 'l',
-                     'concat': 'cc',
                      'f_norm': 'nm'}
+    if opt.bg:
+        logs_args_map['bg_trh'] = 'bg'
+    if opt.dataset == 'fs':
+        logs_args_map['gr_lev'] = 'gr'
 
     log_str = ''
     logs_args = ['prefix', 'subaction'] + sorted(logs_args_map)

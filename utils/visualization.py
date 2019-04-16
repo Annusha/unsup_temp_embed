@@ -103,7 +103,7 @@ class Visual(object):
                 # plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
                 #                  folder_name, name), dpi=400)
             plt.savefig(join(opt.dataset_root, 'plots', opt.subaction,
-                             folder_name, name), transparent=True, dpi=400)
+                             folder_name, name), transparent=True, dpi=300)
             np.savetxt(join(opt.dataset_root, 'plots', opt.subaction,
                             folder_name, '%s.txt' % opt.vis_mode), self._result)
         if show:

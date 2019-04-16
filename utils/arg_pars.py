@@ -17,45 +17,46 @@ parser = argparse.ArgumentParser()
 
 ###########################################
 # data
-actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
+actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich',
+           'scrambledegg', 'friedegg', 'salat', 'pancake']  # bf
 actions = 'rgb'  # fs
-parser.add_argument('--subaction', default='rgb',
-                    help='measure accuracy for different subactivities scrambledegg')
+parser.add_argument('--subaction', default='coffee',
+                    help='measure accuracy for different subactivities')
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
-                         'dataset')
-parser.add_argument('--dataset', default='fs',
-                    help='Breakfast dataset (bf) or YouTube Instructional (yti)'
-                         'or 50 Salads (fs)')
-parser.add_argument('--data_type', default=2, type=int,
+                         'dataset (need additional specification in pipeline.py)')
+parser.add_argument('--dataset', default='own',
+                    help='Breakfast dataset (bf) '
+                         'or YouTube Instructional (yti)'
+                         'or 50 Salads (fs)'
+                         'run your own data (own)')
+parser.add_argument('--data_type', default=0, type=int,
                     help='valid just for Breakfast dataset and 50 Salads (subaction=rgb)'
-                         '0: kinetics - features from the stream network'
-                         '1: data - normalized features'
-                         '2: s1 - features without normalization'
-                         '3: videos'
-                         '4: OPN' 
-                         '5: videovector'
-                         '6: data sabsampled with frequency 5'
-                         '7: video darwin'
+                         '0: kinetics - features from the stream network (bf)'
+                         '1: data - normalized features (bf)'
+                         '2: s1 - features without normalization (bf)'
+                         '3: videos (bf)'
+                         '4: OPN (bf)' 
+                         '5: videovector (bf)'
+                         '6: data sabsampled with frequency 5 (bf)'
+                         '7: video darwin (bf)'
                          ''
-                         '0: kinetics'
-                         '2: s1 - dense trajectories wo normalization')
+                         '0: kinetics (fs)'
+                         '2: s1 - dense trajectories wo normalization (fs)')
 parser.add_argument('--subfolder', default='ascii')
 parser.add_argument('--frame_frequency', default=1, type=int,
                     help='define if frequency of sampled frames and ground truth frequency are different')
 parser.add_argument('--f_norm', default=False, type=bool,
-                    help='normalization of the features')
+                    help='feature normalization')
 
 
 parser.add_argument('--dataset_root', default='',
                     help='root folder for dataset:'
-                         'Breakfast / YTInstructions')
+                         'Breakfast / YTInstructions / 50Salads / yours')
 parser.add_argument('--data', default='',
                     help='direct path to your data features')
 parser.add_argument('--gt', default='groundTruth',
                     help='folder with ground truth labels')
-parser.add_argument('--gr_lev', default='',
-                    help='switch between different levels of label granularity')
 parser.add_argument('--feature_dim', default=64,
                     help='feature dimensionality')
 parser.add_argument('--ext', default='',
@@ -83,59 +84,15 @@ parser.add_argument('--embed_dim', default=20, type=int,
                     help='number of dimensions in embedded space')
 parser.add_argument('--epochs', default=60, type=int,
                     help='number of epochs for training embedding')
-parser.add_argument('--gt_training', default=False, type=bool,
-                    help='training embedding either with gt labels '
-                         'or with labels gotten from the temporal model')
 
 
 ###########################################
-# hyperparams parameters for TCN embeddings
-
-parser.add_argument('--levels', type=int, default=1,
-                    help='number of levels (default: 1)')
-parser.add_argument('--ksize', type=int, default=2,
-                    help='kernel size (default: 7)')
-parser.add_argument('--dropout', type=float, default=0,
-                    help='dropout applied to layers (default: 0.0)')
-parser.add_argument('--tcn_len', type=int, default=10,
-                    help='length of the history')
-
-
-###########################################
-# probabilistic parameters
-parser.add_argument('--gmm', default=1, type=int,
-                    help='number of components for gaussians')
-parser.add_argument('--gmms', default='one',
-                    help='number of gmm for the video collection: many/one')
-parser.add_argument('--reg_cov', default=1e-4, type=float)
-parser.add_argument('--ordering', default=False,
-                    help='apply Mallow model for incorporate ordering')
-parser.add_argument('--shuffle_order', default=False, type=bool,
-                    help='shuffle or order wrt relative time cluster labels after clustering')
-parser.add_argument('--kmeans_shuffle', default=False, type=bool,
-                    help='auto shuffle after kmeans or'
-                         'shuffle enforced numpy with given seed')
-
-
-###########################################
-# vae
-parser.add_argument('--rt_concat', default=0, type=int,
-                    help='additional dimensionality for vae')
-parser.add_argument('--label', default=False, type=bool,
-                    help='features for training embedding is + concat with '
-                         'uniform label')
-parser.add_argument('--concat', default=1, type=int,
-                    help='how much consecutive features to concatenate')
-
-###########################################
-# bg
+# bg and granularity level, dataset specific parameters
 parser.add_argument('--bg', default=False, type=bool,
-                    help='if we need to apply part for modeling background')
-parser.add_argument('--bg_trh', default=55, type=int)
-
-###########################################
-# viterbi
-parser.add_argument('--viterbi', default=True, type=bool)
+                    help='if we need to apply part for modeling background (yti)')
+parser.add_argument('--bg_trh', default=55, type=int, help=' (yti)')
+parser.add_argument('--gr_lev', default='',
+                    help='switch between different levels of label granularity (fs)')
 
 ###########################################
 # save
@@ -152,50 +109,33 @@ parser.add_argument('--resume', default=True, type=bool,
                          'epoch which should be loaded')
 parser.add_argument('--resume_str',
                     # for Breakfast dataset
-                    # default='!norm.!conc._%s_mlp_!pose_full_vae0_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_!zeros_b0_v1_l0_c1_',
-                    # default='grid.vit._%s_mlp_!pose_full_vae1_time10.0_epochs90_embed20_n2_ordering_gmm1_one_!gt_lr0.001_lr_zeros_b0_v1_l0_c1_',
-                    # norm.!conc. (main)
-                    # default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
-                    # default='norm.conc._%s_mlp_!pose_full_vae1_time10.0_epochs60_embed20_n1_ordering_gmm1_one_!gt_lr0.0001_lr_!zeros_b0_v1_l0_c1_',
+                    # norm.!conc.
+                    default='fixed.order._%s_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_',
 
                     # for YouTube Instructions dataset
                     # default='yti.(200,90,-3)_%s_mlp_!pose_full_vae0_time10.0_epochs90_embed200_n4_!ordering_gmm1_one_!gt_lr0.001_lr_zeros_b1_v1_l0_c1_',
 
-                    # for 50 salads dataset : -1 and -2 separately, and together
-                    # default='50s.gs._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
-                    default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
-
-                    # for Breakfast rank model
-                    # default='rank._%s_rank_!pose_full_vae0_time10.0_epochs30_embed30_n2_!ordering_gmm1_one_!gt_lr1e-06_lr_!zeros_b0_v1_l0_c1_b0_',
-                    # default='rank._%s_rank_!pose_full_vae0_time10.0_epochs30_embed30_n2_!ordering_gmm1_one_!gt_lr1e-06_lr_zeros_b0_v1_l0_c1_b96_',
+                    # for 50 salads dataset
+                    # default='full._%s_!bg_cc1_data2_fs_dim30_ep30_gmm1_!gt_!l_lr0.001_mlp_!mal_size0_+d0_vit_',
                     )
 
 
 ###########################################
 # additional
 parser.add_argument('--reduced', default=0, type=int,
-                    help='define how much videos to use')
-parser.add_argument('--grid_search', default=False, type=bool,
-                    help='grid search for optimal parameters')
+                    help='define how much videos to use (0 = all)')
 parser.add_argument('--vis', default=False, type=bool,
                     help='save visualisation of embeddings')
-parser.add_argument('--vis_mode', default='tsne',
-                    help='pca / tsne / segm')
+parser.add_argument('--vis_mode', default='pca',
+                    help='pca / tsne ')
 parser.add_argument('--model_name', default='mlp',
-                    help='mlp / tcn')
+                    help='mlp')
 parser.add_argument('--test_set', default=False, type=bool,
                     help='check if the network if overfitted or not')
 parser.add_argument('--device', default='cuda',
                     help='cpu | cuda')
-parser.add_argument('--prefix', default='colormap3.',
+parser.add_argument('--prefix', default='test.',
                     help='prefix for log file')
-
-
-###########################################
-# additional temporary parameters
-parser.add_argument('--rt_cl_concat', type=bool, default=False,
-                    help='concatenation with relative time label before clustering of embedded features')
-parser.add_argument('--gaussian_cl', type=bool, default=False)
 
 
 ###########################################

@@ -1,0 +1,131 @@
+2019-04-15 19:07:46,569 - 10 - update_argpars.py - update - all: False
+2019-04-15 19:07:46,569 - 10 - update_argpars.py - update - batch_size: 256
+2019-04-15 19:07:46,569 - 10 - update_argpars.py - update - bg: False
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - bg_trh: 55
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - data: ./test_data/features
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - data_type: 0
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - dataset: own
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - dataset_root: ./test_data
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - device: cuda
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - embed_dim: 20
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - epochs: 60
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - ext: txt
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - f_norm: False
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - feature_dim: 64
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - frame_frequency: 1
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - gr_lev: 
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - gt: ./test_data/groundTruth
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - load_embed_feat: False
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - log: DEBUG
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - log_str: test._coffee_!bg_data0_own_dim20_ep60_!nm_lr0.001_mlp_size0_
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - lr: 0.001
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - lr_adj: True
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - model_name: mlp
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - momentum: 0.9
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - num_workers: 4
+2019-04-15 19:07:46,570 - 10 - update_argpars.py - update - prefix: test.
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - reduced: 0
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - resume: True
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - resume_segmentation: False
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - resume_str: %s_test
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - save_embed_feat: False
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - save_likelihood: False
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - save_model: True
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - seed: 0
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - subaction: coffee
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - subfolder: 
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - test_set: False
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - vis: False
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - vis_mode: pca
+2019-04-15 19:07:46,571 - 10 - update_argpars.py - update - weight_decay: 0.0001
+2019-04-15 19:07:46,571 - 10 - mapping.py - load_mapping - load or create mapping
+2019-04-15 19:07:46,571 - 10 - mapping.py - load_gt - successfully loaded
+2019-04-15 19:07:46,571 - 10 - util_functions.py - wrap - <function GroundTruth.load_gt at 0x7fd6cad5d378> took 0.178 ms ~ 0.000 min ~ 0.000 sec
+2019-04-15 19:07:46,572 - 10 - corpus.py - __init__ - coffee  subactions: 5
+2019-04-15 19:07:46,572 - 10 - corpus.py - _init_videos - .
+2019-04-15 19:07:46,764 - 10 - corpus.py - _init_videos - gt statistic: 5 videos Counter({5: 933, 2: 892, 6: 639, 0: 450, 9: 436})
+2019-04-15 19:07:46,764 - 10 - corpus.py - _update_fg_mask - .
+2019-04-15 19:07:46,765 - 10 - corpus.py - __init__ - min: -25.337589  max: 18.344202  avg: 0.124577
+2019-04-15 19:07:46,765 - 10 - pipeline.py - temp_embed - Corpus with poses created
+2019-04-15 19:07:46,765 - 10 - corpus.py - regression_training - .
+2019-04-15 19:07:46,765 - 10 - dataset_loader.py - load_reltime - load data with temporal labels as ground truth
+2019-04-15 19:07:46,765 - 10 - dataset_loader.py - __init__ - Relative time labels
+2019-04-15 19:07:46,765 - 10 - dataset_loader.py - __init__ - Creating feature dataset
+2019-04-15 19:07:48,216 - 10 - mlp.py - create_model - MLP(
+  (fc1): Linear(in_features=64, out_features=40, bias=True)
+  (fc2): Linear(in_features=40, out_features=20, bias=True)
+  (fc_last): Linear(in_features=20, out_features=1, bias=True)
+)
+2019-04-15 19:07:48,216 - 10 - mlp.py - create_model - MSELoss()
+2019-04-15 19:07:48,217 - 10 - mlp.py - create_model - Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    eps: 1e-08
+    lr: 0.001
+    weight_decay: 0.0001
+)
+2019-04-15 19:07:48,221 - 10 - training_embed.py - load_model - loaded model: coffee_test.pth.tar
+2019-04-15 19:07:48,221 - 10 - dataset_loader.py - load_reltime - load data with temporal labels as ground truth
+2019-04-15 19:07:48,221 - 10 - dataset_loader.py - __init__ - Relative time labels
+2019-04-15 19:07:48,221 - 10 - dataset_loader.py - __init__ - Creating feature dataset
+2019-04-15 19:07:48,280 - 10 - corpus.py - regression_training - MLP training: MSE: 0.074200
+2019-04-15 19:07:48,280 - 10 - corpus.py - clustering - .
+2019-04-15 19:07:48,308 - 10 - corpus.py - clustering - time ordering of labels
+2019-04-15 19:07:48,308 - 10 - corpus.py - clustering - Order of labels: [0 1 2 3 4] [0.3658329119552531, 0.4258497906261507, 0.4446571015496343, 0.5726040873816415, 0.6160298692455985]
+2019-04-15 19:07:48,309 - 10 - accuracy_class.py - mof - # gt_labels: 5   # pr_labels: 5
+2019-04-15 19:07:48,310 - 10 - accuracy_class.py - mof - Correspondences: segmentation to gt : ['0: 5', '1: 6', '2: 9', '3: 0', '4: 2']
+2019-04-15 19:07:48,310 - 10 - accuracy_class.py - mof_val - frames true: 1135	frames overall : 3350
+2019-04-15 19:07:48,310 - 10 - corpus.py - clustering - MoF val: 0.33880597014925373
+2019-04-15 19:07:48,310 - 10 - corpus.py - clustering - old MoF val: 0.0
+2019-04-15 19:07:48,310 - 10 - corpus.py - clustering - Update video z for videos before GMM fitting
+2019-04-15 19:07:48,311 - 10 - corpus.py - gaussian_model - Fit Gaussian Mixture Model to the whole dataset at once
+2019-04-15 19:07:48,323 - 10 - util_functions.py - wrap - <function Corpus._gaussians_fit at 0x7fd6cac55730> took 12.240 ms ~ 0.000 min ~ 0.012 sec
+2019-04-15 19:07:48,328 - 10 - util_functions.py - wrap - <function Corpus.gaussian_model at 0x7fd6cac55840> took 17.014 ms ~ 0.000 min ~ 0.017 sec
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof - # gt_labels: 5   # pr_labels: 5
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof - Correspondences: segmentation to gt : ['0: 5', '1: 6', '2: 9', '3: 0', '4: 2']
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_val - frames true: 1135	frames overall : 3350
+2019-04-15 19:07:48,330 - 10 - corpus.py - accuracy_corpus - Action: coffee
+2019-04-15 19:07:48,330 - 10 - corpus.py - accuracy_corpus - MoF val: 0.33880597014925373
+2019-04-15 19:07:48,330 - 10 - corpus.py - accuracy_corpus - previous dic -> MoF val: 0.33880597014925373
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - label 0: 0.124444  56 / 450
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - label 2: 0.517937  462 / 892
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - label 5: 0.469453  438 / 933
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - label 6: 0.194053  124 / 639
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - label 9: 0.126147  55 / 436
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - mof_classes - average class mof: 0.286407
+2019-04-15 19:07:48,330 - 10 - accuracy_class.py - iou_classes - label 0: 0.075472  56 / 742
+2019-04-15 19:07:48,331 - 10 - accuracy_class.py - iou_classes - label 2: 0.271925  462 / 1699
+2019-04-15 19:07:48,331 - 10 - accuracy_class.py - iou_classes - label 5: 0.311966  438 / 1404
+2019-04-15 19:07:48,331 - 10 - accuracy_class.py - iou_classes - label 6: 0.136114  124 / 911
+2019-04-15 19:07:48,331 - 10 - accuracy_class.py - iou_classes - label 9: 0.067985  55 / 809
+2019-04-15 19:07:48,331 - 10 - accuracy_class.py - iou_classes - average IoU: 0.172692
+2019-04-15 19:07:48,352 - 10 - f1_score.py - f1 - f1 score: 0.258357
+2019-04-15 19:07:48,352 - 10 - util_functions.py - wrap - <function Corpus.accuracy_corpus at 0x7fd6cac55c80> took 24.759 ms ~ 0.000 min ~ 0.025 sec
+2019-04-15 19:07:48,353 - 10 - corpus.py - viterbi_decoding - .
+2019-04-15 19:07:48,353 - 10 - corpus.py - viterbi_decoding - 0 / 5
+2019-04-15 19:07:48,353 - 10 - corpus.py - viterbi_decoding - [ 909.  396.  428.  348. 1269.]
+2019-04-15 19:07:48,397 - 10 - corpus.py - viterbi_decoding - [0, 1, 2, 3, 4]
+2019-04-15 19:07:48,613 - 10 - corpus.py - viterbi_decoding - [ 147.  608. 1110. 1223.  262.]
+2019-04-15 19:07:48,614 - 10 - util_functions.py - wrap - <function Corpus.viterbi_decoding at 0x7fd6cac55ae8> took 261.010 ms ~ 0.004 min ~ 0.261 sec
+2019-04-15 19:07:48,615 - 10 - accuracy_class.py - mof - # gt_labels: 5   # pr_labels: 5
+2019-04-15 19:07:48,615 - 10 - accuracy_class.py - mof - Correspondences: segmentation to gt : ['0: 9', '1: 6', '2: 5', '3: 2', '4: 0']
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_val - frames true: 1621	frames overall : 3350
+2019-04-15 19:07:48,616 - 10 - corpus.py - accuracy_corpus - finalAction: coffee
+2019-04-15 19:07:48,616 - 10 - corpus.py - accuracy_corpus - finalMoF val: 0.48388059701492536
+2019-04-15 19:07:48,616 - 10 - corpus.py - accuracy_corpus - finalprevious dic -> MoF val: 0.23701492537313432
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - label 0: 0.355556  160 / 450
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - label 2: 0.855381  763 / 892
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - label 5: 0.383708  358 / 933
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - label 6: 0.532081  340 / 639
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - label 9: 0.000000  0 / 436
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - mof_classes - average class mof: 0.425345
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - label 0: 0.289855  160 / 552
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - label 2: 0.564349  763 / 1352
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - label 5: 0.212463  358 / 1685
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - label 6: 0.374862  340 / 907
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - label 9: 0.000000  0 / 583
+2019-04-15 19:07:48,616 - 10 - accuracy_class.py - iou_classes - average IoU: 0.288306
+2019-04-15 19:07:48,638 - 10 - f1_score.py - f1 - f1 score: 0.307287
+2019-04-15 19:07:48,639 - 10 - util_functions.py - wrap - <function Corpus.accuracy_corpus at 0x7fd6cac55c80> took 25.183 ms ~ 0.000 min ~ 0.025 sec
+2019-04-15 19:07:48,639 - 10 - util_functions.py - wrap - <function temp_embed at 0x7fd7353a5e18> took 2067.827 ms ~ 0.034 min ~ 2.068 sec

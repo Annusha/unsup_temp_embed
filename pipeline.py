@@ -11,64 +11,32 @@ from corpus import Corpus
 from utils.arg_pars import opt
 from utils.logging_setup import logger
 from utils.util_functions import timing, update_opt_str, join_return_stat, parse_return_stat
-# from utils.grid_search import grid_search_tcn as gs
-# from utils.grid_search import grid_search as gs
-from utils.grid_search import grid_search_seeds as gs
 import BF_utils.update_argpars as bf_utils
 import YTI_utils.update_argpars as yti_utils
 import FS_utils.update_argpars as fs_utils
-
-import numpy as np
-import os
+import TD_utils.update_argpars as td_utils
 
 
 @timing
-def temp_embed(iterations=1):
-    corpus = Corpus(Q=opt.gmm,
-                    subaction=opt.subaction)
+def temp_embed():
+    corpus = Corpus(subaction=opt.subaction)
 
     logger.debug('Corpus with poses created')
-    if opt.model_name in ['mlp', 'tcn']:
+    if opt.model_name in ['mlp']:
         corpus.regression_training()
     if opt.model_name == 'nothing':
         corpus.without_temp_emed()
 
-    # return corpus.hist
+    corpus.clustering()
+    corpus.gaussian_model()
 
-    if opt.gaussian_cl:
-        corpus.gaussian_clustering()
+    corpus.accuracy_corpus()
+
+    if opt.resume_segmentation:
+        corpus.resume_segmentation()
     else:
-        corpus.clustering()
+        corpus.viterbi_decoding()
 
-    for iteration in range(iterations):
-        logger.debug('Iteration %d' % iteration)
-        corpus.iter = iteration
-
-        if not opt.gaussian_cl:
-            corpus.gaussian_model()
-
-        corpus.accuracy_corpus()
-
-        if opt.resume_segmentation:
-            corpus.resume_segmentation()
-        else:
-            if opt.viterbi:
-                # corpus.viterbi_decoding()
-                # corpus.accuracy_corpus(prefix='pure vit ')
-
-                # corpus.viterbi_ordering()
-                corpus.ordering_sampler()
-                corpus.rho_sampling()
-                # corpus.accuracy_corpus(prefix='vit+ord ')
-
-
-                corpus.viterbi_decoding()
-                # corpus.viterbi_alex_decoding()
-            else:
-                corpus.subactivity_sampler()
-
-                corpus.ordering_sampler()
-                corpus.rho_sampling()
     corpus.accuracy_corpus('final')
 
     return corpus.return_stat
@@ -76,7 +44,6 @@ def temp_embed(iterations=1):
 @timing
 def all_actions():
     return_stat_all = None
-    # return_stat_all = np.zeros(100)
     if opt.dataset == 'bf':
         actions = ['coffee', 'cereals', 'tea', 'milk', 'juice', 'sandwich', 'scrambledegg', 'friedegg', 'salat', 'pancake']
     if opt.dataset == 'yti':
@@ -89,24 +56,10 @@ def all_actions():
         if not opt.resume:
             opt.lr = lr_init
         update_opt_str()
-        if opt.viterbi:
-            return_stat_single = temp_embed(iterations=1)
-        else:
-            return_stat_single = temp_embed(iterations=5)
-        # return_stat_all += return_stat_single
+        return_stat_single = temp_embed()
         return_stat_all = join_return_stat(return_stat_all, return_stat_single)
     logger.debug(return_stat_all)
-    # np.savetxt(os.path.join(opt.dataset_root, 'histogram.txt'), return_stat_all)
     parse_return_stat(return_stat_all)
-
-
-@timing
-def grid_search():
-    # f = temp_embed(iterations=1)
-    if opt.all:
-        gs(all_actions, opt.seed)
-    else:
-        gs(temp_embed)
 
 
 def resume_segmentation(iterations=10):
@@ -123,16 +76,15 @@ def resume_segmentation(iterations=10):
 
 
 if __name__ == '__main__':
-    print('param')
     if opt.dataset == 'bf':
         bf_utils.update()
     if opt.dataset == 'yti':
         yti_utils.update()
     if opt.dataset == 'fs':
         fs_utils.update()
-    if opt.grid_search:
-        grid_search()
-    elif opt.all:
+    if opt.dataset == 'own':
+        td_utils.update()
+    if opt.all:
         all_actions()
     else:
         temp_embed()

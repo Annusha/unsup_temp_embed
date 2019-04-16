@@ -70,57 +70,13 @@ class RelTimeDataset(FeatureDataset):
         for video in self._videos:
             time_label = np.asarray(video.temp).reshape((-1, 1))
             video_features = self._features[video.global_range]
-            if opt.rt_concat:
-                video_features = join_data(video_features, time_label, np.hstack)
-
-            if opt.concat > 1:
-                video_features_concat = self._features[video.global_range].copy()
-                last_frame = self._features[video.global_range][-1]
-
-                for i in range(opt.concat, 1, -1):
-                    video_features_concat = np.roll(video_features_concat, -1, axis=0)
-                    video_features_concat[-1] = last_frame
-                    video_features = join_data(video_features,
-                                               video_features_concat,
-                                               np.hstack)
 
             temp_features = join_data(temp_features, video_features, np.vstack)
 
             self._gt = join_data(self._gt, time_label, np.vstack)
             # video_features = join_data(None, (time_label, video_features),
             #                             np.hstack)
-        if opt.concat > 1 or opt.rt_concat:
-            self._features = temp_features
 
-class TCNDataset(FeatureDataset):
-    def __init__(self, videos, features):
-        logger.debug('Dataset for TCN model')
-        super().__init__(videos, features)
-
-        self._shifted2realidx = []
-        self._idx2videoidx = []
-        self.l_in = opt.tcn_len
-
-        for video_idx, video in enumerate(self._videos):
-            gt_item = np.asarray(video.temp).reshape((-1, 1))
-            self._gt = join_data(self._gt, gt_item, np.vstack)
-
-            self._idx2videoidx += [video_idx] * video.n_frames
-
-    def __getitem__(self, idx):
-        tcn_features_out = np.zeros((self.l_in, opt.feature_dim))
-        gt_out = np.zeros(self.l_in)
-
-        video_idx = self._idx2videoidx[idx]
-        video_start = self._videos[video_idx].global_start
-        tcn_start = abs(min(0, idx - video_start - self.l_in))
-        tcn_features_out[max(tcn_start, tcn_start-1):] = self._features[idx - self.l_in + tcn_start + 1: idx + 1]
-        ii = self._gt[idx]
-        gt_out[max(tcn_start, tcn_start-1):] = self._gt[idx - self.l_in + tcn_start + 1: idx + 1].squeeze()
-        i2 = 1
-        if opt.rt_concat:
-            tcn_features_out = join_data(tcn_features_out, gt_out.reshape((-1, 1)), np.hstack)
-        return tcn_features_out.T, gt_out
 
 def load_ground_truth(videos, features, shuffle=True):
     logger.debug('load data with ground truth labels for training some embedding')

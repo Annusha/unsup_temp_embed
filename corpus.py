@@ -18,9 +18,7 @@ import time
 from sklearn.cluster import MiniBatchKMeans
 
 from video import Video
-from probabilistic_utils.mallow import Mallow
-from probabilistic_utils.slice_sampling import slice_sampling
-from models import mlp, tcn
+from models import mlp
 from utils.arg_pars import opt
 from utils.logging_setup import logger
 from eval_utils.accuracy_class import Accuracy
@@ -34,7 +32,7 @@ from models.training_embed import load_model, training
 
 
 class Corpus(object):
-    def __init__(self, Q, subaction='coffee'):
+    def __init__(self, subaction='coffee'):
         """
         Args:
             Q: number of Gaussian components in each mixture
@@ -45,7 +43,7 @@ class Corpus(object):
         self.gt_map.load_mapping()
         self._K = self.gt_map.define_K(subaction=subaction)
         logger.debug('%s  subactions: %d' % (subaction, self._K))
-        self.iter = -1
+        self.iter = 0
         self.return_stat = {}
 
         self._acc_old = 0
@@ -53,10 +51,7 @@ class Corpus(object):
         self._subaction = subaction
         # init with ones for consistency with first measurement of MoF
         self._subact_counter = np.ones(self._K)
-        # number of gaussian in each mixture
-        self._Q = 1 if opt.gt_training else Q
         self._gaussians = {}
-        self._mallow = Mallow(self._K)
         self._inv_count_stat = np.zeros(self._K)
         self._embedding = None
         self._gt2label = None
@@ -73,9 +68,6 @@ class Corpus(object):
                      (np.min(self._features),
                       np.max(self._features),
                       np.mean(self._features)))
-
-        if opt.ordering:
-            self.rho_sampling()
 
         # to save segmentation of the videos
         dir_check(os.path.join(opt.data, 'segmentation'))
@@ -157,10 +149,7 @@ class Corpus(object):
         dataloader = load_reltime(videos=self._videos,
                                   features=self._features)
 
-        if opt.model_name == 'mlp':
-            model, loss, optimizer = mlp.create_model()
-        if opt.model_name == 'tcn':
-            model, loss, optimizer = tcn.create_model()
+        model, loss, optimizer = mlp.create_model()
         if opt.resume:
             model.load_state_dict(load_model(name=opt.model_name))
             self._embedding = model
@@ -195,114 +184,12 @@ class Corpus(object):
             self._embedded_feat = self._embedding.embedded(self._embedded_feat.float()).detach().numpy()
             self._embedded_feat = np.squeeze(self._embedded_feat)
 
-        if opt.model_name == 'tcn':
-            for batch_features, batch_gtreltime in unshuffled_dataloader:
-                batch_gtreltime = batch_gtreltime.numpy()[:, -1].reshape((-1, 1))
-                gt_relative_time = join_data(gt_relative_time, batch_gtreltime, np.vstack)
-
-                batch_rel_time = self._embedding(batch_features.float()).detach().numpy()
-                batch_rel_time = batch_rel_time[:, -1].reshape((-1, 1))
-                relative_time = join_data(relative_time, batch_rel_time, np.vstack)
-
-                embedded_feat = self._embedding.embedded(batch_features.float()).detach().numpy()
-                self._embedded_feat = join_data(self._embedded_feat, embedded_feat, np.vstack)
-
         if opt.save_embed_feat:
             self.save_embed_feat()
 
         mse = np.sum((gt_relative_time - relative_time)**2)
         mse = mse / len(relative_time)
         logger.debug('MLP training: MSE: %f' % mse)
-        hist, bin_edges = np.histogram(relative_time, bins=np.linspace(0, 1, 101))
-        logger.debug('Histogram: %s' % str(hist))
-        logger.debug('%s' % str(bin_edges))
-        self.hist = hist
-
-    @timing
-    def gaussian_clustering(self):
-        logger.debug('.')
-        gmm = GaussianMixture(n_components=self._K,
-                              covariance_type='full',
-                              random_state=opt.seed,
-                              reg_covar=opt.reg_cov)
-
-        ########################################################################
-        #####  concat with respective relative time label
-        if opt.rt_cl_concat:
-            temp_embedd = self._embedded_feat.copy()
-            long_rel_time = []
-            for video in self._videos:
-                long_rel_time += list(video.temp)
-            long_rel_time = np.asarray(long_rel_time).reshape((-1, 1))
-            self._embedded_feat = join_data(self._embedded_feat,
-                                            long_rel_time,
-                                            np.hstack)
-            assert self._embedded_feat.shape[1] == (opt.embed_dim + 1)
-        ########################################################################
-
-        gmm.fit(self._embedded_feat)
-        predicted_labels = gmm.predict(self._embedded_feat)
-        post_probs = np.log(gmm.predict_proba(self._embedded_feat))
-        post_probs = np.nan_to_num(post_probs)
-
-        if opt.rt_cl_concat:
-            self._embedded_feat = temp_embedd
-
-        accuracy = Accuracy()
-        long_gt = []
-        long_temp = []
-        for video in self._videos:
-            long_gt += list(video.gt)
-            long_temp += list(video.temp)
-        long_temp = np.array(long_temp)
-
-        predicted_labels_copy = np.asarray(predicted_labels).copy()
-        time2label = {}
-        for label in np.unique(predicted_labels_copy):
-            cluster_mask = predicted_labels_copy == label
-            r_time = np.mean(long_temp[self._total_fg_mask][cluster_mask])
-            time2label[r_time] = label
-
-        ordered_labels = []
-        for time_idx, sorted_time in enumerate(sorted(time2label)):
-            label = time2label[sorted_time]
-            ordered_labels.append(label)
-            predicted_labels_copy[predicted_labels == label] = time_idx
-
-        labels_with_bg = np.ones(len(self._total_fg_mask)) * -1
-        labels_with_bg[self._total_fg_mask] = predicted_labels_copy
-
-        logger.debug('Order of labels: %s, %s' % (str(ordered_labels), str(sorted(time2label))))
-        accuracy.predicted_labels = labels_with_bg
-        accuracy.gt_labels = long_gt
-        old_mof, total_fr = accuracy.mof()
-        self._gt2label = accuracy._gt2cluster
-        for key, val in self._gt2label.items():
-            try:
-                self._label2gt[val[0]] = key
-            except IndexError:
-                pass
-
-        logger.debug('MoF val: ' + str(accuracy.mof_val()))
-        logger.debug('old MoF val: ' + str(float(old_mof) / total_fr))
-
-        ########################################################################
-        # VISUALISATION
-        # if opt.vis:
-        #     vis = Visual(mode=opt.vis_mode, save=True)
-        #     vis.fit(self._embedded_feat, labels_with_bg, 'gmm_')
-        ########################################################################
-
-
-        logger.debug('Update video z and likelihood')
-        post_probs = post_probs[:, ordered_labels]  # order with respect to label ordering
-        labels_with_bg[labels_with_bg == self._K] = -1
-        for video in self._videos:
-            video.update_z(labels_with_bg[video.global_range])
-            video.likelihood_update(subact=-1,
-                                    scores=post_probs[video.global_range])
-
-            video.segmentation['cl'] = (video._z, self._label2gt)
 
 
     @timing
@@ -317,19 +204,15 @@ class Corpus(object):
             save: in case of mp lib all computed likelihoods are saved on disk
                 before the next step
         """
-        # logger.debug('Excluded: %d' % idx_exclude)
         for k in range(self._K):
-            gmm = GaussianMixture(n_components=self._Q,
+            gmm = GaussianMixture(n_components=1,
                                   covariance_type='full',
                                   max_iter=150,
                                   random_state=opt.seed,
-                                  reg_covar=opt.reg_cov)
+                                  reg_covar=1e-4)
             total_indexes = np.zeros(len(self._features), dtype=np.bool)
             for idx, video in enumerate(self._videos):
-                if opt.gt_training:
-                    indexes = np.where(np.asarray(video._gt) == self._label2gt[k])[0]
-                else:
-                    indexes = np.where(np.asarray(video._z) == k)[0]
+                indexes = np.where(np.asarray(video._z) == k)[0]
                 if len(indexes) == 0:
                     continue
                 temp = np.zeros(video.n_frames, dtype=np.bool)
@@ -369,10 +252,6 @@ class Corpus(object):
             scores = None
             for video in self._videos:
                 scores = join_data(scores, video.get_likelihood(), np.vstack)
-            # ------ max ------
-            # bg_trh_score = np.max(scores, axis=0)
-            # logger.debug('bg_trh_score: %s' % str(bg_trh_score))
-            # ------ max ------
 
             bg_trh_score = np.sort(scores, axis=0)[int((opt.bg_trh / 100) * scores.shape[0])]
 
@@ -413,24 +292,7 @@ class Corpus(object):
                                  random_state=opt.seed,
                                  batch_size=50)
 
-        ########################################################################
-        #####  concat with respective relative time label
-        if opt.rt_cl_concat:
-            temp_embedd = self._embedded_feat.copy()
-            long_rel_time = []
-            for video in self._videos:
-                long_rel_time += list(video.temp)
-            long_rel_time = np.asarray(long_rel_time).reshape((-1, 1))
-            self._embedded_feat = join_data(self._embedded_feat,
-                                            long_rel_time,
-                                            np.hstack)
-            assert self._embedded_feat.shape[1] == (opt.embed_dim + 1)
-        ########################################################################
-
         kmean.fit(self._embedded_feat[self._total_fg_mask])
-
-        if opt.rt_cl_concat:
-            self._embedded_feat = temp_embedd
 
         accuracy = Accuracy()
         long_gt = []
@@ -447,31 +309,17 @@ class Corpus(object):
             r_time = np.mean(long_rt[self._total_fg_mask][cluster_mask])
             time2label[r_time] = label
 
-        np.random.seed(opt.seed)
-        shuffle_labels = np.arange(len(time2label))
-        np.random.shuffle(shuffle_labels)
-        logger.debug(['time ordered labels', 'shuffled labels'][opt.shuffle_order])
+        logger.debug('time ordering of labels')
         for time_idx, sorted_time in enumerate(sorted(time2label)):
             label = time2label[sorted_time]
-            if opt.shuffle_order:
-                # logger.debug('shuffled labels')
-                kmeans_labels[kmean.labels_ == label] = shuffle_labels[time_idx]
-            else:
-                # logger.debug('time ordered labels')
-                kmeans_labels[kmean.labels_ == label] = time_idx
-                shuffle_labels = np.arange(len(time2label))
+            kmeans_labels[kmean.labels_ == label] = time_idx
+
+        shuffle_labels = np.arange(len(time2label))
 
         labels_with_bg = np.ones(len(self._total_fg_mask)) * -1
 
-        if opt.shuffle_order and opt.kmeans_shuffle:
-            # use pure output of kmeans algorithm
-            logger.debug('kmeans random labels')
-            labels_with_bg[self._total_fg_mask] = kmean.labels_
-            shuffle_labels = [value for (key, value) in sorted(time2label.items(), key=lambda x: x[0])]
-        else:
-            # use predefined by time order or numpy shuffling labels for kmeans clustering
-            logger.debug('assignment: %s' % ['ordered', 'shuffled'][opt.shuffle_order])
-            labels_with_bg[self._total_fg_mask] = kmeans_labels
+        # use predefined by time order  for kmeans clustering
+        labels_with_bg[self._total_fg_mask] = kmeans_labels
 
         logger.debug('Order of labels: %s %s' % (str(shuffle_labels), str(sorted(time2label))))
         accuracy.predicted_labels = labels_with_bg
@@ -484,28 +332,23 @@ class Corpus(object):
             except IndexError:
                 pass
 
-
         logger.debug('MoF val: ' + str(accuracy.mof_val()))
         logger.debug('old MoF val: ' + str(float(old_mof) / total_fr))
 
         ########################################################################
         # VISUALISATION
         if opt.vis and opt.vis_mode != 'segm':
-            dot_path = '/media/data/kukleva/lab/50salads/plots/rgb/colormaps._rgb_!bg_cc1_data2_fs_dim30_ep60_!nm_gmm1_!gt_!l_lr0.001_mlp_!mal_size10_+d0_vit_/tsne/tsne.txt'
+            dot_path = ''
             self.vis = Visual(mode=opt.vis_mode, save=True, svg=False, saved_dots=dot_path)
-            postfix = ['', '+rt.cc.'][opt.rt_cl_concat]
             self.vis.fit(self._embedded_feat, long_gt, 'gt_', reset=False)
             self.vis.color(long_rt, 'time_')
-            self.vis.color(kmean.labels_, 'kmean_%s' % postfix)
-            # vis.fit(self._embedded_feat, long_rt, 'time_')
-            # vis.fit(self._embedded_feat, kmean.labels_, 'kmean_%s' % postfix)
+            self.vis.color(kmean.labels_, 'kmean')
         ########################################################################
 
         logger.debug('Update video z for videos before GMM fitting')
         labels_with_bg[labels_with_bg == self._K] = -1
         for video in self._videos:
             video.update_z(labels_with_bg[video.global_range])
-            # video._z = kmean.labels_[video.global_range]
 
         for video in self._videos:
             video.segmentation['cl'] = (video._z, self._label2gt)
@@ -514,59 +357,6 @@ class Corpus(object):
         self._subact_counter = np.zeros(self._K)
         for video in self._videos:
             self._subact_counter += video.a
-
-    def ordering_sampler(self):
-        """Sampling ordering for each video via Mallow model"""
-        logger.debug('.')
-        self._inv_count_stat = np.zeros(self._K - 1)
-        bg_total = 0
-        # pr_orders = []
-        for video_idx, video in enumerate(self._videos):
-            video.iter = self.iter
-
-            cur_order = video.ordering_sampler(mallow_model=self._mallow)
-            # cur_order = video.viterbi_top_perm()
-
-            # if cur_order not in pr_orders:
-            #     logger.debug(str(cur_order))
-            #     pr_orders.append(cur_order)
-            self._inv_count_stat += video.inv_count_v
-            # logger.debug('background: %d' % int(video.fg_mask.size - np.sum(video.fg_mask)))
-            bg_total += int(video.fg_mask.size - np.sum(video.fg_mask))
-        logger.debug('total background: %d' % bg_total)
-        logger.debug('inv_count_vec: %s' % str(self._inv_count_stat))
-
-    def rho_sampling(self):
-        """Sampling of parameters for Mallow Model using slice sampling"""
-        logger.debug('rho sampling')
-        # self._mallow.rho = []
-        mallow_rho = []
-        inv_pdf = lambda x: -1. / self._mallow.logpdf(x)
-        for k in range(self._K - 1):
-            # logger.debug('rho sampling k: %d' % k)
-            self._mallow.set_sample_params(sum_inv_vals=self._inv_count_stat[k],
-                                           k=k, N=len(self._videos))
-            sample = slice_sampling(burnin=10, x_init=self._mallow.rho[k],
-                                    logpdf=inv_pdf)
-            mallow_rho.append(sample)
-        self._mallow.rho = mallow_rho
-        logger.debug(str(['%.4f' % i for i in self._mallow.rho]))
-
-    @timing
-    def viterbi_ordering(self):
-        logger.debug('.')
-        self._inv_count_stat = np.zeros(self._K - 1)
-        bg_total = 0
-        for video_idx, video in enumerate(self._videos):
-            if video_idx % 20 == 0:
-                logger.debug('%d / %d' % (video_idx, len(self._videos)))
-            video.iter = self.iter
-            video.viterbi_ordering(mallow_model=self._mallow)
-            self._inv_count_stat += video.inv_count_v
-            # logger.debug('background: %d' % int(video.fg_mask.size - np.sum(video.fg_mask)))
-            bg_total += int(video.fg_mask.size - np.sum(video.fg_mask))
-        logger.debug('total background: %d' % bg_total)
-        logger.debug(str(self._inv_count_stat))
 
     @timing
     def viterbi_decoding(self):
@@ -586,39 +376,6 @@ class Corpus(object):
         self._count_subact()
         logger.debug(str(self._subact_counter))
 
-    def _action_presence_counter(self):
-        """Count how many times each action occurs within video collection. Lens model."""
-        presence = np.zeros(self._K)
-        for video in self._videos:
-            presence += np.asarray(video.a) > 1
-        return presence
-
-    def viterbi_alex_decoding(self):
-        logger.debug('.')
-        self._count_subact()
-        len_model = np.asarray(self._subact_counter) / self._action_presence_counter()
-        for video_idx, video in enumerate(self._videos):
-            if video_idx % 20 == 0:
-                logger.debug('%d / %d' % (video_idx, len(self._videos)))
-                self._count_subact()
-                logger.debug(str(self._subact_counter))
-            video.viterbi_alex(len_model)
-        self._count_subact()
-        logger.debug(str(self._subact_counter))
-
-    @timing
-    def subactivity_sampler(self):
-        """Sampling of subactivities for each video from multinomial distribution"""
-        logger.debug('.')
-        self._count_subact()
-        for idx, video in enumerate(self._videos):
-            if idx % 20 == 0:
-                logger.debug('%d / %d' % (idx, len(self._videos)))
-                logger.debug(str(self._subact_counter))
-            temp_sub_counter = self._subact_counter - video.a
-            a, _ = video.subactivity_sampler(self._subact_counter)
-            self._subact_counter = temp_sub_counter + a
-        logger.debug(str(self._subact_counter))
 
     def without_temp_emed(self):
         logger.debug('No temporal embedding')
@@ -682,9 +439,9 @@ class Corpus(object):
             video.segmentation[video.iter] = (video._z, self._label2gt)
 
         if opt.vis:
+            ########################################################################
             # VISUALISATION
 
-            # gt_plot_iter = [[0, 1], [0]][self.iter != 0]
             if opt.vis_mode != 'segm':
                 long_pr = [self._label2gt[i] for i in long_pr]
 
@@ -696,7 +453,7 @@ class Corpus(object):
                     self.vis.color(labels=long_pr, prefix='iter_%d' % self.iter, reset=reset)
             else:
                 ####################################################################
-                # segmentation visualisation
+                # visualisation of segmentation
                 if prefix == 'final':
                     colors = {}
                     cmap = plt.get_cmap('tab20')
@@ -717,6 +474,7 @@ class Corpus(object):
                         name = '_'.join(name[-2:])
                         plot_segm(path, video.segmentation, colors, name=name)
                 ####################################################################
+            ####################################################################
 
         return accuracy.frames()
 

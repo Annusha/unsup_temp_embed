@@ -20,8 +20,7 @@ class MLP(nn.Module):
         super(MLP, self).__init__()
 
         ### concat
-        self.fc1 = nn.Linear(opt.feature_dim * opt.concat + opt.rt_concat + opt.label,
-                             opt.embed_dim * 2)
+        self.fc1 = nn.Linear(opt.feature_dim, opt.embed_dim * 2)
 
         # self.fc1 = nn.Linear(opt.feature_dim, opt.embed_dim * 2)
         self.fc2 = nn.Linear(opt.embed_dim * 2, opt.embed_dim)

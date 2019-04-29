@@ -4,7 +4,7 @@ Official implementation in python.  https://arxiv.org/abs/1904.04189
 
 #### One activity class
 
-![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/local_pipeline_v.pdf)
+![alt text](https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/local_pipeline_v.png)
 
 
 ##### Create environment

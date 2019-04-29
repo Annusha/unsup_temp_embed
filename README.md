@@ -2,38 +2,94 @@
 
 Official implementation in python.  https://arxiv.org/abs/1904.04189
 
-Two branches: master, global
+If you use the code, please cite
+
+
+```
+A. Kukleva, H. Kuehne, F. Sener , and J. Gall:
+Unsupervised Learning of Action Classes with Continuous Temporal Embedding 
+in IEEE Conference on Computer Vision and Pattern Recognition (CVPR'19)
+```
+
+
+Two branches: master [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO.md), global [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/global/HOWTO.md)
 
 master: 
 Pipeline for one activity class. Figure 1 in the paper.
 
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/local_pipeline_v.pdf)
+
 global:
 Proposed pipeline for unsupervised learning with unknown activity classes. Figure 2 in the paper.
 
-
-##### Create environment
-```
-conda create --name cte --file requirements.txt
-```
-
-##### Input files
-```
-one file per video
-# rows = # frames in video
-# columns = dimensionality of frame-wise features
-```
-to extract frame-wise features use improved dense trajectories (this step can be substituted by smth else)
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/global_pipeline_v.pdf)
 
 
-##### Run your own data
-see folders TD_utils and test_data and modify files respectively
+#### Visualization of embeddings via t-SNE on the 50Salads dataset
+
+Each frame is color coded a) with the corresponding ground truth subaction label, b) with K assigned subaction labels after clustering as the second step in Fig.1 in our main paper, c)with the predicted labels after the decoding stage. The optimization of our network is performed with respect to relative timestep of each frame. In d) we show the respective relative time label in the continuous temporal embedding assigned to each frame feature. The color bar depicts that bright blue corresponds to 0 (startof the video) and pink to 1 (end of the video).
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/embedding.pdf)
+
+
+#### The number of subactions K
+
+##### Breakfast dataset
+
+| Activity class name  | # subactions (K) |
+| -------------------- | ---------------- |
+|        Coffe         |        7         |
+|        Cereals       |        5         |
+|        Tea           |        7         |
+|        Milk          |        5         |
+|        Juice         |        8         |
+|        Sandwich      |        9         |
+|        Scrambledegg  |       12         |
+|        Friedegg      |        9         |
+|        Salat         |        8         |
+|        Pancake       |       14         |
+
+##### YouTube Instractions dataset
+
+| Activity class name  | # subactions (K) |
+| -------------------- | ---------------- |
+|        Changing tire |       11         |
+|        Making cofee  |       10         |
+|        CPR           |        7         |
+|        Jump car      |       12         |
+|        Repot plant   |        8         |
+
+
+#### Qualitative results
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/cereals.pdf)
+Breakfast dataset. The order of subactions: SIL, take bowl, pour cereals, pour milk, stir cereals, SIL
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/tea.pdf)
+Breakfast dataset. The order of subactions: SIL, take cup, add teabag, pour water, SIL
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/milk.pdf)
+Breakfast dataset. The order of subactions: SIL, spoon powder, pour milk, stir milk, SIL
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/juice.pdf)
+Breakfast dataset. The order of subactions: SIL, take knife, cut orange, squeeze orange, pour juice, squeeze orange, pour juice, squeeze orange, pour juice, squeeze orange, pour juice, SIL
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/sandwich.pdf)
+Breakfast dataset. The order of subactions: SIL, cut bun, smear butter, put toppingOnTop, SIL
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/rgb-01-1_frames.pdf)
+50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, cut, place, null, null, add oil, add pepper, mix dressing, end
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/tree/master/supp_mat/rgb-25-2_frames.pdf)
+50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, peel cucumber, cut, place, mix ingredients, add oil, null, add pepper, null, mix dressing, serve salad onto plate, add dressing, end
+
 
 
 ##### TODO descriptions
 
 - [ ] Evaluation
 - [ ] Reproduce numbers
-- [ ] Qualitative results
+- [x] Qualitative results
 - [ ] Dense trajectorues extaction
 - [ ] table 1, videovector howto  
 

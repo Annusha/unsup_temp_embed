@@ -11,7 +11,8 @@ Unsupervised Learning of Action Classes with Continuous Temporal Embedding
 in IEEE Conference on Computer Vision and Pattern Recognition (CVPR'19)
 ```
 
-Two branches: master [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO.md), global [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/global/HOWTO.md)
+Two branches: master [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO_master.md), global [
+(howto)](https://github.com/Annusha/unsup_temp_embed/blob/global/HOWTO_global.md)
 
 master: 
 Pipeline for one activity class. Figure 1 in the paper.

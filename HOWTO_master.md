@@ -23,7 +23,7 @@ one file per video
 to extract frame-wise features use improved dense trajectories (this step can be substituted by smth else)
 
 ###### General parameters for training and testing
-```python
+```
 --dataset_root=/path/to/your/root/data/folder/
 --action='coffee'  # dataset dependant, see below
 # set feature extension and dimensionality

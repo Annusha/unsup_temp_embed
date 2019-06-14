@@ -130,5 +130,5 @@ see folders
 > dummy_data/  
 > data_utils/dummy_utils/    
 
-and modify with respect your own data
+and modify with respect to your own data
 

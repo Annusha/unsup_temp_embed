@@ -24,8 +24,6 @@ def update():
     if torch.cuda.is_available():
         opt.device = 'cuda'
 
-
-    opt.bg = False  # YTI argument
     opt.gr_lev = ''  # 50Salads argument
 
     if opt.model_name == 'nothing':

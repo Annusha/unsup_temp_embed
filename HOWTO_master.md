@@ -54,7 +54,8 @@ for each dataset create separate folder (specify path --dataset_root) where the 
 > mapping/  
 > models/
 
-during testing will be created several folders which by default stored at --dataset_root, change if necessary --output 
+during testing will be created several folders which by default stored at --dataset_root, change if necessary 
+--output_dir 
 
 > segmentation/  
 > likelihood/  
@@ -100,8 +101,8 @@ python data_utils/YTI_utils/yti_train.py
 
 ##### Test on 50Salads
 
-- 50Salads features [link]( https://drive.google.com/open?id=1jTEwy-VpuSpB53nwgymVvmXWglFrfK7k)
-- 50Salads ground-truth [link](https://drive.google.com/open?id=1pL6MjaWCLFo_jJ4UKjrjgPju2pyQeBxr)
+- 50Salads features [link](https://drive.google.com/open?id=17o0WfF970cVnazrRuOWE92-OiYHEXTT3)
+- 50Salads ground-truth [link](https://drive.google.com/open?id=1mzcN9pz1tKygklQOiWI7iEvcJ1vJfU3R)
 - pretrained model [link](https://drive.google.com/open?id=1mTfm15zC3Uc-_NMApuEiqosaiQUnivzJ)
 - actions: 'rgb' == 'all'
 

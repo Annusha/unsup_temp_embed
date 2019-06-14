@@ -30,8 +30,6 @@ def update():
         opt.lr = 1e-3
         opt.epochs = 30
 
-    opt.bg = False  # YTI argument
-    opt.gr_lev = ''  # 50Salads argument
     if opt.model_name == 'nothing':
         opt.load_embed_feat = True
 

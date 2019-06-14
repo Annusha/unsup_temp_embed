@@ -39,9 +39,6 @@ if __name__ == '__main__':
     opt.load_model = False
     # opt.loaded_model_name = '%s.pth.tar'
 
-    # use background noise (e.g. for YTI)
-    opt.bg = False
-
     # update log name and absolute paths
     update()
 

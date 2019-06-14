@@ -20,14 +20,19 @@ def update():
     opt.output_dir = ops.join(opt.dataset_root, 'output')
     opt.mapping_dir = ops.join(opt.dataset_root, 'mapping')
     dir_check(opt.output_dir)
-    opt.f_norm = True
+    opt.f_norm = False
     if torch.cuda.is_available():
         opt.device = 'cuda'
-
 
     opt.embed_dim = 200
 
     opt.gr_lev = ''
+    if opt.model_name == 'nothing':
+        opt.load_embed_feat = True
+
+    if not opt.load_model:
+        opt.lr = 1e-3
+        opt.epochs = 90
 
     update_opt_str()
 

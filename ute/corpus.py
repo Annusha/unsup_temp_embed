@@ -88,11 +88,11 @@ class Corpus(object):
                         if opt.reduced:
                             opt.reduced = opt.reduced - 1
                             continue
-                    if opt.dataset == 'fs':
-                        gt_name = filename[:-(len(opt.ext) + 1)] + '.txt'
-                    else:
-                        match = re.match(r'(\w*)\.\w*', filename)
-                        gt_name = match.group(1)
+                    # if opt.dataset == 'fs':
+                    #     gt_name = filename[:-(len(opt.ext) + 1)] + '.txt'
+                    # else:
+                    match = re.match(r'(.*)\..*', filename)
+                    gt_name = match.group(1)
                     # use extracted features from pretrained on gt embedding
                     if opt.load_embed_feat:
                         path = os.path.join(opt.data, 'embed', opt.subaction,
@@ -151,7 +151,7 @@ class Corpus(object):
                                   features=self._features)
 
         model, loss, optimizer = mlp.create_model()
-        if opt.resume:
+        if opt.load_model:
             model.load_state_dict(load_model())
             self._embedding = model
         else:
@@ -238,7 +238,6 @@ class Corpus(object):
 
         if opt.bg:
             # with bg model I assume that I use only one component
-            assert self._Q == 1
             for gm_idx, gmm in self._gaussians.items():
                 self._gaussians[gm_idx] = GMM_trh(gmm)
 
@@ -369,6 +368,8 @@ class Corpus(object):
                 logger.debug('%d / %d' % (video_idx, len(self._videos)))
                 self._count_subact()
                 logger.debug(str(self._subact_counter))
+            if opt.bg:
+                video.update_fg_mask()
             video.viterbi()
             cur_order = list(video._pi)
             if cur_order not in pr_orders:

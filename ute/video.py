@@ -86,8 +86,8 @@ class Video(object):
 
             # self._features = self._features[1:, 1:]
 
-            if opt.data_type == 0 and opt.dataset == 'fs':
-                self._features = self._features.T
+            # if opt.data_type == 0 and opt.dataset == 'fs':
+            #     self._features = self._features.T
 
             if opt.f_norm:  # normalize features
                 mask = np.ones(self._features.shape[0], dtype=bool)
@@ -98,6 +98,7 @@ class Video(object):
                 z = z / np.std(self._features[mask], axis=0)
                 self._features = np.zeros(self._features.shape)
                 self._features[mask] = z
+                self._features = np.nan_to_num(self.features())
 
             self.n_frames = self._features.shape[0]
             self._likelihood_grid = np.zeros((self.n_frames, self._K))
@@ -274,6 +275,9 @@ class Video(object):
         # print('path alignment:', join(opt.data, 'segmentation', name))
 
         return return_score
+
+    def update_fg_mask(self):
+        self.fg_mask = np.sum(self._valid_likelihood, axis=1) > 0
 
     def resume(self):
         name = str(self.name) + '_' + opt.log_str + 'iter%d' % self.iter + '.txt'

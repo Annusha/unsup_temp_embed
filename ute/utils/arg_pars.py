@@ -25,7 +25,7 @@ parser.add_argument('--subaction', default='coffee',
 parser.add_argument('--all', default=False, type=bool,
                     help='to process in pipeline all subactions of the corresponding '
                          'dataset (need additional specification in pipeline.py)')
-parser.add_argument('--dataset', default='bf',
+parser.add_argument('--dataset', default='fs',
                     help='Breakfast dataset (bf) '
                          'or YouTube Instructional (yti)'
                          'or 50 Salads (fs)'
@@ -92,7 +92,7 @@ parser.add_argument('--epochs', default=60, type=int,
 # bg and granularity level, dataset specific parameters
 parser.add_argument('--bg', default=False, type=bool,
                     help='if we need to apply part for modeling background (yti)')
-parser.add_argument('--bg_trh', default=55, type=int, help=' (yti)')
+parser.add_argument('--bg_trh', default=45, type=int, help=' (yti)')
 parser.add_argument('--gr_lev', default='',
                     help='switch between different levels of label granularity (fs)')
 

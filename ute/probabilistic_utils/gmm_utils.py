@@ -34,16 +34,6 @@ class GMM_trh:
     def _define_threshold(self):
         mean = self._gmm.means_[0]
         self.mean_score = self._gmm.score_samples(mean.reshape(1, -1))
-        logger.debug('mean: %f' % self.mean_score)
-
-        # cov = self._gmm.covariances_[0]
-        # sample = (mean - 3 * np.diag(cov)).reshape(1, -1)
-        # sample_score = self._gmm.score_samples(sample)
-        # # self.trh = self._gmm.score_samples(sample)
-        # self.trh = self.mean_score - opt.bg_trh
-        # str_print = 'GMM: %f   lower bound: %f    ' % (self.mean_score - sample_score, self._gmm.lower_bound_)
-        # str_print += 'var max: %f   min: %f    mean: %f' % (np.max(cov), np.min(cov), np.mean(cov))
-        # logger.debug(str_print)
 
     def score_samples(self, features):
         return self._gmm.score_samples(features)

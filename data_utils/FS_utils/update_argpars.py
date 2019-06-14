@@ -6,31 +6,34 @@
 __author__ = 'Anna Kukleva'
 __date__ = 'February 2018'
 
-import os
+import os.path as ops
+import torch
 
 from ute.utils.arg_pars import opt
-from ute.utils.util_functions import update_opt_str
+from ute.utils.util_functions import update_opt_str, dir_check
 from ute.utils.logging_setup import path_logger
 
 
 def update():
-    opt.dataset_root = '/media/data/kukleva/lab/50salads'
+    opt.data = ops.join(opt.dataset_root, 'features')
+    opt.gt = ops.join(opt.dataset_root, 'groundTruth')
+    opt.output_dir = ops.join(opt.dataset_root, 'output')
+    opt.mapping_dir = ops.join(opt.dataset_root, 'mapping')
+    dir_check(opt.output_dir)
+    opt.f_norm = False
+    if torch.cuda.is_available():
+        opt.device = 'cuda'
 
-    data_subfolder = ['i3d', '', 's1'][opt.data_type]
-    opt.data = os.path.join(opt.dataset_root, 'features', data_subfolder)
-
-    opt.gt = os.path.join(opt.data, opt.gt)
-
-    opt.ext = ['npy', '', 'txt'][opt.data_type]
-    opt.feature_dim = [2048, 0, 64][opt.data_type]
     opt.embed_dim = 30
-    if opt.gr_lev == '':
-        opt.gr_lev = 'eval'
 
-    opt.bg = False
+    if not opt.load_model:
+        opt.lr = 1e-3
+        opt.epochs = 30
 
-    if opt.all:
-        opt.subaction = 'all'
+    opt.bg = False  # YTI argument
+    opt.gr_lev = ''  # 50Salads argument
+    if opt.model_name == 'nothing':
+        opt.load_embed_feat = True
 
     update_opt_str()
 

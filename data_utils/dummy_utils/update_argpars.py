@@ -4,30 +4,32 @@
 """
 
 __author__ = 'Anna Kukleva'
-__date__ = 'March 2019'
+__date__ = 'June 2019'
 
-import os
+import os.path as ops
+import torch
 
 from ute.utils.arg_pars import opt
-from ute.utils.util_functions import update_opt_str
+from ute.utils.util_functions import update_opt_str, dir_check
 from ute.utils.logging_setup import path_logger
 
 
 def update():
-    opt.dataset_root = './dummy_data'
+    opt.data = ops.join(opt.dataset_root, 'features')
+    opt.gt = ops.join(opt.dataset_root, 'groundTruth')
+    opt.output_dir = ops.join(opt.dataset_root, 'output')
+    opt.mapping_dir = ops.join(opt.dataset_root, 'mapping')
+    dir_check(opt.output_dir)
+    opt.f_norm = True
+    if torch.cuda.is_available():
+        opt.device = 'cuda'
 
-    opt.data = os.path.join(opt.dataset_root, 'features')
-    opt.subfolder = ''  # can be useful in case of different features for the same dataset
 
-    opt.gt = os.path.join(opt.dataset_root, opt.gt)
+    opt.bg = False  # YTI argument
+    opt.gr_lev = ''  # 50Salads argument
 
-    opt.ext = ['txt'][opt.data_type]
-    opt.feature_dim = [64][opt.data_type]
-    opt.embed_dim = 20  # dimensionality of the desirable embedding
-
-    # %s is the name of the subaction
-    # the name of the model to resume
-    opt.resume_str = '%s_test'
+    if opt.model_name == 'nothing':
+        opt.load_embed_feat = True
 
     update_opt_str()
 

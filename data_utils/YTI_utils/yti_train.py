@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # set activity
     # 'changing_tire', 'coffee', 'jump_car', 'cpr', 'repot'
     # all
-    opt.subaction = 'all'
+    opt.subaction = 'coffee'
     # set feature extension and dimensionality
     opt.ext = 'txt'
     opt.feature_dim = 3000
@@ -32,9 +32,8 @@ if __name__ == '__main__':
     # model name can be 'mlp' or 'nothing' for no embedding (just raw features)
     opt.model_name = 'mlp'
 
-    # load an already trained model (stored in the models directory in dataset_root)
-    opt.load_model = True
-    opt.loaded_model_name = '%s.pth.tar'
+    # do not load model
+    opt.load_model = False
 
     # use background noise (e.g. for YTI)
     opt.bg = True

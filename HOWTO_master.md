@@ -86,7 +86,7 @@ python data_utils/BF_utils/bf_train.py
 
 - YouTube Instructions features [link](https://drive.google.com/open?id=1HyF3_bwWgz1QNgzLvN4J66TJVsQTYFTa) 
 - YouTube Instructions ground-truth [link](https://drive.google.com/open?id=1ENgdHvwHj2vFwflVXosCkCVP9mfLL5lP)
-- pretrained models [link](https://drive.google.com/open?id=1Ao_sC9ZPX8ZznCyLNAclkGIE3aBSekIC)
+- pretrained models [link](https://drive.google.com/open?id=1LRRCfFTKzY4cXCQiTnMnG_qRxhQ0EkjR)
 - actions: 'changing_tire', 'coffee', 'jump_car', 'cpr', 'repot'  
  &nbsp;&nbsp;&nbsp;&nbsp;use 'all' to run test on all actions in series  
  

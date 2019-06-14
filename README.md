@@ -63,35 +63,34 @@ Each frame is color coded a) with the corresponding ground truth subaction label
 
 #### Qualitative results
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/cereals.png" height="150" width="500">
 Breakfast dataset. The order of subactions: SIL, take bowl, pour cereals, pour milk, stir cereals, SIL
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/cereals.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/tea.png" height="150" width="500">
 Breakfast dataset. The order of subactions: SIL, take cup, add teabag, pour water, SIL
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/tea.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/milk.png" height="150" width="500">
 Breakfast dataset. The order of subactions: SIL, spoon powder, pour milk, stir milk, SIL
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/milk.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/juice.png" height="150" width="500">
 Breakfast dataset. The order of subactions: SIL, take knife, cut orange, squeeze orange, pour juice, squeeze orange, pour juice, squeeze orange, pour juice, squeeze orange, pour juice, SIL
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/juice.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/sandwich.png" height="150" width="500">
 Breakfast dataset. The order of subactions: SIL, cut bun, smear butter, put toppingOnTop, SIL
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/sandwich.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/rgb-01-1_frames.png" height="150" width="500">
 50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, cut, place, null, null, add oil, add pepper, mix dressing, end
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/rgb-01-1_frames.png" height="150" width="500">
 
-<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/rgb-25-2_frames.png" height="150" width="500">
 50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, peel cucumber, cut, place, mix ingredients, add oil, null, add pepper, null, mix dressing, serve salad onto plate, add dressing, end
+<img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/rgb-25-2_frames.png" height="150" width="500">
+
 
 
 
 ##### TODO descriptions
 
 - [ ] Evaluation
-- [ ] Reproduce numbers
+- [x] Reproduce numbers
 - [x] Qualitative results
 - [ ] Dense trajectorues extaction
 - [ ] table 1, videovector howto  
-
-

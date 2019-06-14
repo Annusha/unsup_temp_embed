@@ -79,6 +79,7 @@ Breakfast dataset. The order of subactions: SIL, cut bun, smear butter, put topp
 <img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/sandwich.png" height="150" width="500">
 
 50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, cut, place, null, null, add oil, add pepper, mix dressing, end
+
 <img src="https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/rgb-01-1_frames.png" height="150" width="500">
 
 50Salads dataset. The order of subactions: start, cut, place, cut, place, cut, place, peel cucumber, cut, place, mix ingredients, add oil, null, add pepper, null, mix dressing, serve salad onto plate, add dressing, end

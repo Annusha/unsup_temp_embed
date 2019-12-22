@@ -6,9 +6,12 @@ If you use the code, please cite
 
 
 ```
-A. Kukleva, H. Kuehne, F. Sener , and J. Gall:
-Unsupervised Learning of Action Classes with Continuous Temporal Embedding 
-in IEEE Conference on Computer Vision and Pattern Recognition (CVPR'19)
+@inproceedings{kukleva2019unsupervised,
+  title={Unsupervised learning of action classes with continuous temporal embedding},
+  author={Kukleva, Anna and Kuehne, Hilde and Sener, Fadime and Gall, Jurgen},
+  booktitle={IEEE Conference on Computer Vision and Pattern Recognition (CVPR'19)},
+  year={2019}
+}
 ```
 
 Two branches: master [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO_master.md), global [

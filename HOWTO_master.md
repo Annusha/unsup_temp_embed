@@ -71,9 +71,9 @@ during testing will be created several folders which by default stored at --data
 
 ##### Test on Breakfast
 
-- Breakfast features [link](https://drive.google.com/open?id=1Ar4XKA_moL7gcczjxKpZZY4zJ_zBcOdG)
-- Breakfast ground-truth [link](https://drive.google.com/open?id=1-1ie5gAwQozhIHr_ggMtlxgrE699dnvc)
-- pretrained models [link](https://drive.google.com/open?id=1Ok5w5yvDP5VBuaJj1k17J1OWsw-j58_z)
+- Breakfast features [link](https://drive.google.com/open?id=1Ar4XKA_moL7gcczjxKpZZY4zJ_zBcOdG). // will be updated
+- Breakfast ground-truth [link](https://drive.google.com/file/d/1RO8lrvLy4bVaxZ7C62R0jVQtclXibLXU)
+- pretrained models [link](https://drive.google.com/open?id=1Ok5w5yvDP5VBuaJj1k17J1OWsw-j58_z). // will be updated
 - actions: 'coffee', 'cereals', 'tea', 'milk', 'juice', 'sanwich', 'scrambledegg', 'friedegg', 'salat', 
 'pancake'  
  &nbsp;&nbsp;&nbsp;&nbsp;use 'all' to run test on all actions in series 

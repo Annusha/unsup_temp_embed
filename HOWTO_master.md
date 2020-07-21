@@ -7,6 +7,11 @@ Official implementation in python.  https://arxiv.org/abs/1904.04189
 ![alt text](https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/local_pipeline_v.png)
 
 
+#### Unknown activity classes
+
+![alt text](https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/global_pipeline_v.png)
+
+
 ##### Create environment
 ```
 conda create --name ute --file requirements.txt
@@ -78,9 +83,12 @@ python data_utils/BF_utils/bf_test.py
 
 # to train models from scratch
 python data_utils/BF_utils/bf_train.py
+
+# to test / train global pipeline
+python data_utils/BF_utils/bf_global.py
 ```
  
- 
+ comments on global pipeline: pretrained model available for the setting K=10, K'=5. To switch between test / train mode use parameter 'load_model'. 
 
 ##### Test on Inria YouTube Instructions
 

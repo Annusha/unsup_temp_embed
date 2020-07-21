@@ -90,11 +90,3 @@ Breakfast dataset. The order of subactions: SIL, cut bun, smear butter, put topp
 
 
 
-
-##### TODO descriptions
-
-- [ ] Evaluation
-- [x] Reproduce numbers
-- [x] Qualitative results
-- [ ] Dense trajectorues extaction
-- [ ] table 1, videovector howto  

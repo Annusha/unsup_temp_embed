@@ -27,7 +27,6 @@ def temp_embed():
 
     corpus.accuracy_corpus()
 
-
     if opt.resume_segmentation:
         corpus.resume_segmentation()
     else:

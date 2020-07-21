@@ -32,7 +32,7 @@ from ute.models.training_embed import load_model, training
 
 
 class Corpus(object):
-    def __init__(self, subaction='coffee'):
+    def __init__(self, subaction='coffee', K=None):
         """
         Args:
             Q: number of Gaussian components in each mixture
@@ -41,7 +41,7 @@ class Corpus(object):
         np.random.seed(opt.seed)
         self.gt_map = GroundTruth(frequency=opt.frame_frequency)
         self.gt_map.load_mapping()
-        self._K = self.gt_map.define_K(subaction=subaction)
+        self._K = self.gt_map.define_K(subaction=subaction) if K is None else K
         logger.debug('%s  subactions: %d' % (subaction, self._K))
         self.iter = 0
         self.return_stat = {}
@@ -64,10 +64,10 @@ class Corpus(object):
         self._features = None
         self._embedded_feat = None
         self._init_videos()
-        logger.debug('min: %f  max: %f  avg: %f' %
-                     (np.min(self._features),
-                      np.max(self._features),
-                      np.mean(self._features)))
+        # logger.debug('min: %f  max: %f  avg: %f' %
+        #              (np.min(self._features),
+        #               np.max(self._features),
+        #               np.mean(self._features)))
 
         # to save segmentation of the videos
         dir_check(os.path.join(opt.output_dir, 'segmentation'))
@@ -138,6 +138,19 @@ class Corpus(object):
                 self._total_fg_mask[np.nonzero(video.global_range)[0][video.fg_mask]] = True
         else:
             self._total_fg_mask = np.ones(len(self._features), dtype=bool)
+
+    def get_videos(self):
+        for video in self._videos:
+            yield video
+
+    def get_features(self):
+        return self._features
+
+    def video_byidx(self, idx):
+        return np.asarray(self._videos)[idx]
+
+    def __len__(self):
+        return len(self._videos)
 
     def regression_training(self):
         if opt.load_embed_feat:
@@ -382,7 +395,6 @@ class Corpus(object):
     def without_temp_emed(self):
         logger.debug('No temporal embedding')
         self._embedded_feat = self._features.copy()
-
 
     @timing
     def accuracy_corpus(self, prefix=''):

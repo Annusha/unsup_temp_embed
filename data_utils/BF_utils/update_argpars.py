@@ -27,10 +27,16 @@ def update():
     if torch.cuda.is_available():
         opt.device = 'cuda'
 
-    opt.embed_dim = 20
+    if opt.global_pipe:
+        opt.embed_dim = 30
+    else:
+        opt.embed_dim = 20
 
     if not opt.load_model:
-        opt.lr = 1e-4
+        if opt.global_pipe:
+            opt.lr = 1e-3
+        else:
+            opt.lr = 1e-4
         opt.epochs = 60
 
     opt.bg = False  # YTI argument

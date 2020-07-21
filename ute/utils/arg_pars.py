@@ -137,6 +137,17 @@ parser.add_argument('--test_set', default=False, type=bool,
                     help='check if the network if overfitted or not')
 parser.add_argument('--device', default='cpu',
                     help='cpu | cuda')
+parser.add_argument('--full', default=True, type=bool,
+                    help='check smth using only 15 videos')
+
+###########################################
+# global pipeline parameters
+parser.add_argument('--global_pipe', default=False, type=bool)
+parser.add_argument('--global_k_prime', default=0, type=int,
+                    help='parameter for the global pipeline')
+parser.add_argument('--global_K', default=5, type=int)
+parser.add_argument('--local_dim', default=200, type=int)
+parser.add_argument('--local_epoch', default=90, type=int)
 
 
 ###########################################

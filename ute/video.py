@@ -84,7 +84,9 @@ class Video(object):
             ######################################
             # fixed.order._coffee_mlp_!pose_full_vae0_time10.0_epochs60_embed20_n1_!ordering_gmm1_one_!gt_lr0.0001_lr_zeros_b0_v1_l0_c1_.pth.tar
 
-            # self._features = self._features[1:, 1:]
+            # if self._features.shape[-1] == 65 and opt.feature_dim == 64:
+            #     self._features = self._features[1:, 1:]
+            #     np.savetxt(self.path, self._features)
 
             # if opt.data_type == 0 and opt.dataset == 'fs':
             #     self._features = self._features.T
@@ -109,7 +111,7 @@ class Video(object):
         try:
             assert len(self.gt) == self.n_frames
         except AssertionError:
-            print(self.path, '# gt and # frames does not match %d / %d' % (len(self.gt), self.n_frames))
+            # print(self.path, '# gt and # frames does not match %d / %d' % (len(self.gt), self.n_frames))
             if abs(len(self.gt) - self.n_frames) > 50:
                 if opt.data_type == 4:
                     os.remove(os.path.join(opt.gt, self.name))

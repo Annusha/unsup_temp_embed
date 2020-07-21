@@ -75,7 +75,7 @@ def training(train_loader, epochs, save, **kwargs):
             # features = features.float().cuda(non_blocking=True)
             # labels = labels.float().cuda()
             output = model(features)
-            loss_values = loss(output, labels)
+            loss_values = loss(output.squeeze(), labels.squeeze())
             losses.update(loss_values.item(), features.size(0))
 
             optimizer.zero_grad()
@@ -101,14 +101,22 @@ def training(train_loader, epochs, save, **kwargs):
         save_dict = {'epoch': epoch,
                      'state_dict': model.state_dict(),
                      'optimizer': optimizer.state_dict()}
-        dir_check(join(opt.dataset_root, 'models'))
+        if opt.global_pipe:
+            dir_check(join(opt.dataset_root, 'models', 'global'))
+            opt.resume_str = join(opt.dataset_root, 'models', 'global',
+                                  '%s.pth.tar' % opt.log_str)
+        else:
+            dir_check(join(opt.dataset_root, 'models'))
         torch.save(save_dict, opt.resume_str)
     return model
 
 
 def load_model():
     if opt.loaded_model_name:
-        resume_str = opt.loaded_model_name % opt.subaction
+        if opt.global_pipe:
+            resume_str = opt.loaded_model_name
+        else:
+            resume_str = opt.loaded_model_name % opt.subaction
         # resume_str = opt.resume_str
     else:
         resume_str = opt.log_str + '.pth.tar'

@@ -14,15 +14,12 @@ If you use the code, please cite
 }
 ```
 
-Two branches: master [(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO_master.md), global [
-(howto)](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO_global.md)
+To train or reproduce numbers: [HowTo](https://github.com/Annusha/unsup_temp_embed/blob/master/HOWTO_master.md)
 
-master: 
 Pipeline for one activity class. Figure 1 in the paper.
 
 ![alt text](https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/local_pipeline_v.png)
 
-global:
 Proposed pipeline for unsupervised learning with unknown activity classes. Figure 2 in the paper.
 
 ![alt text](https://github.com/Annusha/unsup_temp_embed/blob/master/supp_mat/global_pipeline_v.png)
@@ -90,11 +87,3 @@ Breakfast dataset. The order of subactions: SIL, cut bun, smear butter, put topp
 
 
 
-
-##### TODO descriptions
-
-- [ ] Evaluation
-- [x] Reproduce numbers
-- [x] Qualitative results
-- [ ] Dense trajectorues extaction
-- [ ] table 1, videovector howto  

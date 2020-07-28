@@ -77,7 +77,7 @@ during testing will be created several folders which by default stored at --data
 - actions: 'coffee', 'cereals', 'tea', 'milk', 'juice', 'sanwich', 'scrambledegg', 'friedegg', 'salat', 
 'pancake'  
  &nbsp;&nbsp;&nbsp;&nbsp;use 'all' to run test on all actions in series 
-  - log files for bf_test.py and bf_global.py (test) [link](https://drive.google.com/file/d/1_U8V1JwNyB03ONlerTLI76_ecTWynLYG) 
+ - log files for bf_test.py (all) and bf_global.py (test) [link](https://drive.google.com/file/d/1_U8V1JwNyB03ONlerTLI76_ecTWynLYG) 
  ```bash
  # to test pretrained models
 python data_utils/BF_utils/bf_test.py

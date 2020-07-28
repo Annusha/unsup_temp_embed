@@ -34,7 +34,7 @@ def update():
 
     if not opt.load_model:
         if opt.global_pipe:
-            opt.lr = 1e-3
+            opt.lr = 1e-4
         else:
             opt.lr = 1e-4
         opt.epochs = 60

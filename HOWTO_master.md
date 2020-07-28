@@ -71,12 +71,13 @@ during testing will be created several folders which by default stored at --data
 
 ##### Test on Breakfast
 
-- Breakfast features [link](https://drive.google.com/open?id=1Ar4XKA_moL7gcczjxKpZZY4zJ_zBcOdG). // will be updated
+- Breakfast features [link](https://drive.google.com/file/d/1DbYnU2GBb68CxEt2I50QZm17KGYKNR1L)
 - Breakfast ground-truth [link](https://drive.google.com/file/d/1RO8lrvLy4bVaxZ7C62R0jVQtclXibLXU)
-- pretrained models [link](https://drive.google.com/open?id=1Ok5w5yvDP5VBuaJj1k17J1OWsw-j58_z). // will be updated
+- pretrained models [link](https://drive.google.com/file/d/1nV6YX72p1jwUTmF5Nt59PfxKNBI7pwQV)
 - actions: 'coffee', 'cereals', 'tea', 'milk', 'juice', 'sanwich', 'scrambledegg', 'friedegg', 'salat', 
 'pancake'  
  &nbsp;&nbsp;&nbsp;&nbsp;use 'all' to run test on all actions in series 
+  - log files for bf_test.py and bf_global.py (test) [link](https://drive.google.com/file/d/1_U8V1JwNyB03ONlerTLI76_ecTWynLYG) 
  ```bash
  # to test pretrained models
 python data_utils/BF_utils/bf_test.py
